@@ -65,20 +65,22 @@ def get_response(intents_list, intents_json):
             break
     return result
 
-
+print(f"Uok Bot: Before we proceed, I want to make sure we have your consent to \n"
+        f"\t\tcollect and process your personal information in accordance with POPI \n"
+        f"\t\t(Protection of Personal Information) regulations. Continuing interaction \n"
+        f"\t\twith this platform will be deemed as consent. We will only use your information \n"
+        f"\t\tconfor the purpose of improving our services and ensuring a better user experience.\n"
+        f"Uok Bot: Continue? or exit")
 while True:
-    print(f"Uok Bot: Before we proceed, I want to make sure we have your consent to "
-          f"collect and process your personal information in accordance with POPI "
-          f"(Protection of Personal Information) regulations. Continuing interaction "
-          f"with this platform will be deemed as consent. We will only use your information "
-          f"for the purpose of improving ourservices and ensuring a better user experience.")
-    print(f"Uok Bot: May I have your name?")
+
+    # print(f"Uok Bot: Continue? or exit")
     message = input("You: ")
+    # print(f"Uok Bot: May I have your name?")
     ints = predict_class(message)
     res = get_response(ints, intents)
     print(f"Uok Bot: {res}")
 
- 
+
 
   
 
