@@ -1,0 +1,72 @@
+body {
+  margin: 0;
+  font-family: Arial, sans-serif;
+  background: url('images/graduation.jpg') no-repeat center center/cover;
+  color: #fff;
+}
+
+.container {
+  background: rgba(0,0,0,0.7);
+  padding: 30px;
+  max-width: 600px;
+  margin: 50px auto;
+  border-radius: 12px;
+  text-align: center;
+}
+
+h1, h2 {
+  color: #ffcc00;
+}
+
+form {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+label {
+  text-align: left;
+  font-weight: bold;
+}
+
+input, select {
+  padding: 8px;
+  border-radius: 6px;
+  border: none;
+  outline: none;
+}
+
+.btn {
+  background: #ffcc00;
+  color: black;
+  padding: 10px;
+  border: none;
+  border-radius: 8px;
+  font-size: 16px;
+  cursor: pointer;
+  text-decoration: none;
+  display: inline-block;
+  margin-top: 10px;
+}
+
+.btn:hover {
+  background: #ff9900;
+}
+
+.back {
+  display: inline-block;
+  margin-top: 15px;
+  color: #ffcc00;
+  text-decoration: none;
+}
+
+.back:hover {
+  text-decoration: underline;
+}
+
+.dropdowns {
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+  margin-top: 20px;
+}

@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Delete Student Queries & Meetings</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background: linear-gradient(rgba(0,0,0,0.6), rgba(0,0,0,0.6)),
+                  url("https://img.freepik.com/free-photo/modern-university-campus_23-2148721227.jpg") no-repeat center center fixed;
+      background-size: cover;
+      margin: 0;
+      padding: 0;
+    }
+
+    .container {
+      width: 55%;
+      margin: 60px auto;
+      background: #fff;
+      padding: 30px;
+      border-radius: 12px;
+      box-shadow: 0px 4px 10px rgba(0,0,0,0.3);
+    }
+
+    h2 {
+      text-align: center;
+      margin-bottom: 20px;
+      color: #2c3e50;
+    }
+
+    form {
+      margin-bottom: 40px;
+    }
+
+    label {
+      display: inline-block;
+      width: 200px;
+      font-weight: bold;
+      margin-bottom: 10px;
+      color: #2c3e50;
+    }
+
+    input, select {
+      padding: 8px;
+      width: 60%;
+      border-radius: 6px;
+      border: 1px solid #ccc;
+      margin-bottom: 15px;
+    }
+
+    .btn {
+      padding: 10px 20px;
+      border: none;
+      border-radius: 6px;
+      background: #c0392b;
+      color: #fff;
+      cursor: pointer;
+      font-weight: bold;
+      transition: 0.3s;
+    }
+
+    .btn:hover {
+      background: #e74c3c;
+    }
+
+    hr {
+      margin: 30px 0;
+    }
+
+    .back-btn {
+      display: block;
+      width: fit-content;
+      margin: 0 auto;
+      margin-top: 20px;
+      text-decoration: none;
+      background: #2980b9;
+      color: #fff;
+      padding: 10px 20px;
+      border-radius: 6px;
+      font-weight: bold;
+      transition: 0.3s;
+    }
+
+    .back-btn:hover {
+      background: #1f618d;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <!-- Delete Student Query Section -->
+    <h2>Delete Student Query</h2>
+    <form>
+      <label for="query-id">Query ID:</label>
+      <input type="text" id="query-id" placeholder="Enter Query ID"><br>
+
+      <label for="query-student">Student No:</label>
+      <input type="text" id="query-student" placeholder="Enter Student Number"><br>
+
+      <label for="query-topic">Query Topic:</label>
+      <input type="text" id="query-topic" placeholder="Enter Query Topic"><br>
+
+      <button type="submit" class="btn">Delete Query</button>
+    </form>
+
+    <hr>
+
+    <!-- Delete Meeting Section -->
+    <h2>Delete Meeting</h2>
+    <form>
+      <label for="meeting-id">Meeting ID:</label>
+      <input type="text" id="meeting-id" placeholder="Enter Meeting ID"><br>
+
+      <label for="meeting-date">Meeting Date:</label>
+      <input type="date" id="meeting-date"><br>
+
+      <label for="meeting-type">Meeting Type:</label>
+      <select id="meeting-type">
+        <option value="Consultation">Consultation</option>
+        <option value="Academic">Academic</option>
+        <option value="Administrative">Administrative</option>
+      </select><br>
+
+      <button type="submit" class="btn">Delete Meeting</button>
+    </form>
+
+    <!-- Back Button -->
+    <a href="Booking & Consultation.html" class="back-btn">⬅ Back to Booking & Consultation</a>
+    <a href="Notices.html" class="back-btn"> Announcements</a>
+  </div>
+</body>
+</html>

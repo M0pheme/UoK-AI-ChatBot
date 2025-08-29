@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Booking & Consultations</title>
+  <style>
+    /* Background */
+    body {
+      font-family: Arial, sans-serif;
+      margin: 0;
+      padding: 0;
+      background: url('your-background.jpg') no-repeat center center fixed;
+      background-size: cover;
+      color: #333;
+    }
+
+    /* Page container */
+    .container {
+      max-width: 800px;
+      margin: 50px auto;
+      background: rgba(255, 255, 255, 0.95);
+      padding: 30px;
+      border-radius: 12px;
+      box-shadow: 0px 6px 15px rgba(0,0,0,0.2);
+    }
+
+    h1 {
+      text-align: center;
+      color: #2c3e50;
+      margin-bottom: 25px;
+    }
+
+    /* Labels */
+    label {
+      font-weight: bold;
+      display: block;
+      margin-bottom: 6px;
+    }
+
+    /* Inputs & Dropdowns */
+    input[type="text"], select {
+      width: 100%;
+      padding: 10px;
+      margin-bottom: 15px;
+      border: 1px solid #bbb;
+      border-radius: 6px;
+      font-size: 14px;
+    }
+
+    /* Radio buttons */
+    .radio-group {
+      margin-bottom: 20px;
+    }
+
+    .radio-group label {
+      display: block;
+      margin-bottom: 8px;
+      cursor: pointer;
+    }
+
+    /* Booking button */
+    .book-btn {
+      display: block;
+      width: 100%;
+      padding: 12px;
+      background: #2980b9;
+      color: #fff;
+      border: none;
+      border-radius: 6px;
+      font-size: 16px;
+      font-weight: bold;
+      cursor: pointer;
+      margin-top: 10px;
+      transition: background 0.3s ease;
+    }
+
+    .book-btn:hover {
+      background: #1f6390;
+    }
+
+    /* Back button */
+    .back-btn {
+      display: inline-block;
+      margin-top: 15px;
+      padding: 10px 20px;
+      background: #7f8c8d;
+      color: white;
+      border-radius: 6px;
+      text-decoration: none;
+      font-size: 14px;
+      transition: background 0.3s ease;
+    }
+
+    .back-btn:hover {
+      background: #636e72;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>Booking & Consultations</h1>
+
+    <form>
+      <!-- User Info -->
+      <label for="fname">First Name</label>
+      <input type="text" id="fname" name="fname" placeholder="Enter your first name" required>
+
+      <label for="lname">Surname</label>
+      <input type="text" id="lname" name="lname" placeholder="Enter your surname" required>
+
+      <label for="classification">Classification</label>
+      <select id="classification" name="classification">
+        <option value="student">Student</option>
+        <option value="employee">Employee</option>
+      </select>
+
+      <label for="service">Select Service</label>
+      <select id="service" name="service">
+        <option value="it">IT Support</option>
+        <option value="lecture">Lecture Consultation</option>
+        <option value="clinic">Clinic</option>
+        <option value="ctl">Center Of Teaching & Learning</option>
+        <option value="counselling">Counselling</option>
+        <option value="admin">Admin</option>
+      </select>
+
+      <!-- Slot Selection -->
+      <div class="radio-group">
+        <label><input type="radio" name="slot" value="mon" required> Monday 08:00 - 15h30</label>
+        <label><input type="radio" name="slot" value="tue"> Tuesday & Wednesday 09:00 - 15h30</label>
+        <label><input type="radio" name="slot" value="thu"> Thursday 09:00 - 14h30</label>
+      </div>
+
+      <!-- Booking Button -->
+      <button type="submit" class="book-btn">BOOK</button>
+    </form>
+
+    <!-- Back to Home -->
+    <a href="Faculties.html" class="back-btn">⬅ Previous</a>
+    <a href="Default.html" class="back-btn">⬅ Log out</a>
+    <a href="Profile.html" class="back-btn"> Update Details</a>
+
+  </div>
+</body>
+</html>
