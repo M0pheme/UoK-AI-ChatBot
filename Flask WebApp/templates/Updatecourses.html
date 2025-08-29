@@ -1,0 +1,223 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Add & Update Courses</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background: linear-gradient(rgba(0,0,0,0.6), rgba(0,0,0,0.6)),
+                  url("https://img.freepik.com/free-photo/university-campus_23-2148203901.jpg") no-repeat center center fixed;
+      background-size: cover;
+      margin: 0;
+      padding: 0;
+      color: #2c3e50;
+    }
+
+    .container {
+      width: 80%;
+      margin: 40px auto;
+      background: #fff;
+      padding: 30px;
+      border-radius: 12px;
+      box-shadow: 0px 4px 12px rgba(0,0,0,0.4);
+    }
+
+    h2 {
+      text-align: center;
+      margin-bottom: 20px;
+      color: #2c3e50;
+    }
+
+    .form-section {
+      margin-bottom: 40px;
+      border: 1px solid #ddd;
+      padding: 20px;
+      border-radius: 8px;
+      background: #f9f9f9;
+    }
+
+    h3 {
+      margin-bottom: 15px;
+      color: #34495e;
+    }
+
+    label {
+      display: block;
+      margin: 10px 0 5px;
+      font-weight: bold;
+    }
+
+    input, select, textarea {
+      width: 100%;
+      padding: 10px;
+      margin-bottom: 15px;
+      border: 1px solid #ccc;
+      border-radius: 6px;
+      font-size: 14px;
+    }
+
+    button {
+      background: #3498db;
+      color: #fff;
+      border: none;
+      padding: 12px 20px;
+      border-radius: 6px;
+      font-size: 15px;
+      cursor: pointer;
+      transition: 0.3s;
+    }
+
+    button:hover {
+      background: #2c80b4;
+    }
+
+    .back-btn {
+      display: block;
+      width: fit-content;
+      margin: 20px auto 0;
+      text-decoration: none;
+      background: #27ae60;
+      color: #fff;
+      padding: 10px 20px;
+      border-radius: 6px;
+      font-weight: bold;
+      transition: 0.3s;
+    }
+
+    .back-btn:hover {
+      background: #1e8449;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h2>📚 Add & Update Courses</h2>
+
+    <!-- Add Course Section -->
+    <div class="form-section">
+      <h3>➕ Add New Course</h3>
+      <form>
+        <label for="courseId">Course ID</label>
+        <input type="text" id="courseId" name="courseId" placeholder="e.g., IT101" required>
+
+        <label for="courseName">Course Name</label>
+        <select id="courseName" name="courseName" required>
+          <option value="">-- Select a Course --</option>
+          <!-- Engineering -->
+          <optgroup label="Engineering">
+            <option>Civil Engineering</option>
+            <option>Electrical Engineering</option>
+            <option>Mechanical Engineering</option>
+            <option>Computer Engineering</option>
+          </optgroup>
+          <!-- EMS -->
+          <optgroup label="EMS (Economic & Management Sciences)">
+            <option>Accounting</option>
+            <option>Business Management</option>
+            <option>Economics</option>
+            <option>Informatics</option>
+          </optgroup>
+          <!-- Humanities -->
+          <optgroup label="Humanities">
+            <option>Psychology</option>
+            <option>Political Science</option>
+            <option>Sociology</option>
+            <option>Communication Studies</option>
+          </optgroup>
+          <!-- Health Sciences -->
+          <optgroup label="Health Sciences">
+            <option>Nursing</option>
+            <option>Pharmacy</option>
+            <option>Physiotherapy</option>
+            <option>Public Health</option>
+          </optgroup>
+        </select>
+
+        <label for="faculty">Faculty</label>
+        <select id="faculty" name="faculty" required>
+          <option>Engineering</option>
+          <option>EMS</option>
+          <option>Humanities</option>
+          <option>Health Sciences</option>
+        </select>
+
+        <label for="credits">Credits</label>
+        <input type="number" id="credits" name="credits" min="1" max="30" required>
+
+        <label for="duration">Duration (weeks)</label>
+        <input type="number" id="duration" name="duration" min="1" max="52" required>
+
+        <label for="description">Description</label>
+        <textarea id="description" name="description" rows="4"></textarea>
+
+        <button type="submit">Add Course</button>
+      </form>
+    </div>
+
+    <!-- Update Course Section -->
+    <div class="form-section">
+      <h3>✏️ Update Existing Course</h3>
+      <form>
+        <label for="updateId">Enter Course ID to Update</label>
+        <input type="text" id="updateId" name="updateId" placeholder="e.g., IT101" required>
+
+        <label for="updateName">Course Name</label>
+        <select id="updateName" name="updateName">
+          <option value="">-- Select a Course --</option>
+          <!-- Engineering -->
+          <optgroup label="Engineering">
+            <option>Civil Engineering</option>
+            <option>Electrical Engineering</option>
+            <option>Mechanical Engineering</option>
+            <option>Computer Engineering</option>
+          </optgroup>
+          <!-- EMS -->
+          <optgroup label="EMS (Economic & Management Sciences)">
+            <option>Accounting</option>
+            <option>Business Management</option>
+            <option>Economics</option>
+            <option>Informatics</option>
+          </optgroup>
+          <!-- Humanities -->
+          <optgroup label="Humanities">
+            <option>Psychology</option>
+            <option>Political Science</option>
+            <option>Sociology</option>
+            <option>Communication Studies</option>
+          </optgroup>
+          <!-- Health Sciences -->
+          <optgroup label="Health Sciences">
+            <option>Nursing</option>
+            <option>Pharmacy</option>
+            <option>Physiotherapy</option>
+            <option>Public Health</option>
+          </optgroup>
+        </select>
+
+        <label for="updateFaculty">Faculty</label>
+        <select id="updateFaculty" name="updateFaculty">
+          <option>Engineering</option>
+          <option>EMS</option>
+          <option>Humanities</option>
+          <option>Health Sciences</option>
+        </select>
+
+        <label for="updateCredits">Credits</label>
+        <input type="number" id="updateCredits" name="updateCredits" min="1" max="30">
+
+        <label for="updateDuration">Duration (weeks)</label>
+        <input type="number" id="updateDuration" name="updateDuration" min="1" max="52">
+
+        <label for="updateDescription">Description</label>
+        <textarea id="updateDescription" name="updateDescription" rows="4"></textarea>
+
+        <button type="submit">Update Course</button>
+      </form>
+    </div>
+
+    <!-- Back Button -->
+    <a href="faculty.html" class="back-btn">⬅ Back to Faculty Page</a>
+  </div>
+</body>
+</html>

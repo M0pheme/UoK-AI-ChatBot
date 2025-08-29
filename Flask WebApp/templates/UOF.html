@@ -1,0 +1,201 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>University of Kasi</title>
+  <link rel="stylesheet" href="style.css">
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background: url('https://images.unsplash.com/photo-1524995997946-a1c2e315a42f?ixlib=rb-4.0.3&auto=format&fit=crop&w=1400&q=80') no-repeat center center/cover;
+      margin: 0;
+      padding: 0;
+      color: #fff;
+      scroll-behavior: smooth; /* smooth scrolling */
+    }
+
+    header {
+      background: rgba(0, 0, 0, 0.7);
+      padding: 15px 30px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      position: sticky;
+      top: 0;
+      z-index: 1000;
+    }
+
+    header h1 {
+      margin: 0;
+      font-size: 28px;
+    }
+
+    nav ul {
+      list-style: none;
+      margin: 0;
+      padding: 0;
+      display: flex;
+    }
+
+    nav ul li {
+      margin-left: 20px;
+    }
+
+    nav ul li a {
+      color: #fff;
+      text-decoration: none;
+      font-weight: bold;
+      transition: color 0.3s;
+    }
+
+    nav ul li a:hover {
+      color: #f4d03f;
+    }
+
+    .btn {
+      background: #f4d03f;
+      color: #000 !important;
+      padding: 8px 15px;
+      border-radius: 5px;
+      font-weight: bold;
+    }
+
+    .hero {
+      text-align: center;
+      padding: 120px 20px;
+      background: rgba(0, 0, 0, 0.5);
+    }
+
+    .hero h2 {
+      font-size: 36px;
+      margin-bottom: 15px;
+    }
+
+    .hero p {
+      font-size: 18px;
+      margin-bottom: 20px;
+    }
+
+    .about, .faculties, .research, .contact {
+      background: rgba(0, 0, 0, 0.6);
+      padding: 50px 20px;
+      text-align: center;
+      margin: 20px;
+      border-radius: 10px;
+    }
+
+    .faculty-list {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 20px;
+      margin-top: 20px;
+    }
+
+    .faculty {
+      background: rgba(255, 255, 255, 0.1);
+      padding: 20px;
+      border-radius: 10px;
+    }
+
+    footer {
+      text-align: center;
+      padding: 15px;
+      background: rgba(0, 0, 0, 0.7);
+    }
+  </style>
+</head>
+<body>
+  <!-- Top Navigation -->
+  <header>
+    <div class="logo">
+      <h1>University of Kasi</h1>
+    </div>
+    <nav>
+      <ul>
+        <li><a href="#home">Home</a></li>
+        <li><a href="#about">About</a></li>
+        <li><a href="#faculties">Faculties</a></li>
+        <li><a href="#admissions">Admissions</a></li>
+        <li><a href="#research">Research</a></li>
+        <li><a href="#contact">Contact</a></li>
+        <!-- Student Portal button -->
+        <li><a href="Default.html" class="btn">Student Portal</a></li>
+      </ul>
+    </nav>
+  </header>
+
+  <!-- Hero Banner -->
+  <section id="home" class="hero">
+    <div class="hero-text">
+      <h2>Welcome to the University of Kasi</h2>
+      <p>Shaping leaders of tomorrow through education, innovation and community impact.</p>
+      <a href="Default.html" class="btn">Go to Student Portal</a>
+    </div>
+  </section>
+
+  <!-- About Section -->
+  <section id="about" class="about">
+    <h2>About UOK</h2>
+    <p>
+      The University of Kasi (UOK) is dedicated to academic excellence, inclusivity, 
+      and preparing students to thrive in an ever-changing world.
+    </p>
+  </section>
+
+  <!-- Faculties Section -->
+  <section id="faculties" class="faculties">
+    <h2>Our Faculties</h2>
+    <div class="faculty-list">
+      <div class="faculty">
+        <h3>Engineering</h3>
+        <p>Focused on innovation and infrastructure, training future engineers to solve real-world problems.</p>
+      </div>
+      <div class="faculty">
+        <h3>Health Sciences</h3>
+        <p>Committed to improving healthcare with world-class training in medicine, nursing, and pharmacy.</p>
+      </div>
+      <div class="faculty">
+        <h3>Law</h3>
+        <p>Shaping legal minds through courses in justice, corporate law, and human rights.</p>
+      </div>
+      <div class="faculty">
+        <h3>ICT</h3>
+        <p>Equipping students with skills in computer science, software engineering, and AI for the digital future.</p>
+      </div>
+      <div class="faculty">
+        <h3>Education</h3>
+        <p>Developing educators who inspire and transform learning across communities.</p>
+      </div>
+      <div class="faculty">
+        <h3>Business & Economics</h3>
+        <p>Empowering future leaders in finance, economics, entrepreneurship, and management.</p>
+      </div>
+      <div class="faculty">
+        <h3>Humanities</h3>
+        <p>Exploring human culture, philosophy, history, and languages to enrich society.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- Research Section -->
+  <section id="research" class="research">
+    <h2>Research at UOK</h2>
+    <p>
+      Our university leads groundbreaking research in science, technology, health, and the humanities,
+      making an impact locally and globally.
+    </p>
+  </section>
+
+  <!-- Contact Section -->
+  <section id="contact" class="contact">
+    <h2>Contact Us</h2>
+    <p>Email: info@uok.ac.za | Phone: +27 12 345 6789</p>
+    <p>Address: 123 Kasi Road, Johannesburg, South Africa</p>
+  </section>
+
+  <!-- Footer -->
+  <footer>
+    <p>&copy; 2025 University of Kasi. All Rights Reserved.</p>
+  </footer>
+</body>
+</html>
