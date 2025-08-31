@@ -123,7 +123,7 @@
       <h1>Delete Notices / Announcements</h1>
       <p>Students and Employees can delete outdated or irrelevant announcements here.</p>
     </div>
-    <a href="Default.html" class="logout-btn">Logout</a>
+    <a href="{{ url_for('logout') }}" class="back">⬅ Logout</a>
   </header>
 
   <div class="notice-container">
@@ -154,7 +154,10 @@
   </div>
 
   <div class="footer-buttons">
-    <a href="Queries.html">⬅ Back</a>
+    <a href="{{ url_for('profile') }}">⬅ Back</a>
   </div>
+
+    <!-- Include PyBot here -->
+    {% include "chatbot.html" %}
 </body>
 </html>

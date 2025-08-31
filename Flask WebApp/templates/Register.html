@@ -2,7 +2,7 @@
 <html>
 <head>
   <title>Register - University of Kasi</title>
-  <link rel="stylesheet" href="style2.css">
+  <link rel="stylesheet" href="../static/style2.css">
   <style>
     body {
       margin: 0;
@@ -83,7 +83,10 @@
       <input type="password" required>
       <button type="submit" class="btn">Register</button>
     </form>
-    <a href="Default.html" class="back">⬅ Back</a>
+    <a href="{{ url_for('index') }}" class="back">⬅ Back</a>
   </div>
+
+  <!-- Include PyBot here -->
+    {% include "chatbot.html" %}
 </body>
 </html>

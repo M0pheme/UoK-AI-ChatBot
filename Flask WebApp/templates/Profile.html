@@ -89,7 +89,7 @@
     <div class="container">
         <!-- Delete Section -->
         <h2>Delete Student/Employee</h2>
-        <form>
+        <form method="POST" action="{{ url_for('delete_student_employee') }}">
             <label for="delete-id">Student/Employee No:</label>
             <input type="text" id="delete-id" placeholder="Enter ID"><br>
 
@@ -106,7 +106,7 @@
 
         <!-- Update Section -->
         <h2>Update Student/Employee</h2>
-        <form>
+        <form method="POST" action="{{ url_for('update_student_employee') }}">
             <label for="update-name">Name:</label>
             <input type="text" id="update-name" placeholder="Enter New Name"><br>
 
@@ -123,10 +123,14 @@
         </form>
 
         <!-- Back Button -->
-        <a href="Queries.html" class="back-btn"> Queries & Appointments</a>
-        <a href="Booking & Consultation.html" class="back-btn">⬅ Back</a>
+        <a href="{{ url_for('queries') }}" class="back-btn"> Queries & Appointments</a>
+        <a href="{{ url_for('booking') }}" class="back-btn">⬅ Back</a>
+
 
 
     </div>
+
+    <!-- Include PyBot here -->
+    {% include "chatbot.html" %}
 </body>
 </html>

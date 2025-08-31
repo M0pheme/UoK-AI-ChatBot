@@ -97,7 +97,7 @@
     <!-- Add Course Section -->
     <div class="form-section">
       <h3>➕ Add New Course</h3>
-      <form>
+      <form method="POST" action="{{ url_for('add_course') }}">
         <label for="courseId">Course ID</label>
         <input type="text" id="courseId" name="courseId" placeholder="e.g., IT101" required>
 
@@ -158,7 +158,7 @@
     <!-- Update Course Section -->
     <div class="form-section">
       <h3>✏️ Update Existing Course</h3>
-      <form>
+      <form method="POST" action="{{ url_for('update_course') }}">
         <label for="updateId">Enter Course ID to Update</label>
         <input type="text" id="updateId" name="updateId" placeholder="e.g., IT101" required>
 
@@ -219,5 +219,8 @@
     <!-- Back Button -->
     <a href="faculty.html" class="back-btn">⬅ Back to Faculty Page</a>
   </div>
+
+    <!-- Include PyBot here -->
+    {% include "chatbot.html" %}
 </body>
 </html>

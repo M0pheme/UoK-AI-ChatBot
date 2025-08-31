@@ -1,0 +1,16 @@
+<!-- chatbot.html -->
+<link rel="stylesheet" href="{{ url_for('static', filename='chat-box.css') }}">
+
+<div id="chat-box">
+    <button id="chat-toggle"><i class="fas fa-comments"></i></button>
+    <div id="chat-content">
+        <div id="chat-messages"></div>
+        <div id="chat-input">
+            <input type="text" id="user-input" placeholder="Type your message...">
+            <button id="send-button">Send</button>
+        </div>
+    </div>
+</div>
+
+<script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
+<script src="{{ url_for('static', filename='script.js') }}"></script>

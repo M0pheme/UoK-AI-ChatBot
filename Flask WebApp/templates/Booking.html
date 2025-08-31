@@ -103,6 +103,7 @@
 
     <form>
       <!-- User Info -->
+      <form method="POST" action="{{ url_for('booking') }}">
       <label for="fname">First Name</label>
       <input type="text" id="fname" name="fname" placeholder="Enter your first name" required>
 
@@ -127,9 +128,9 @@
 
       <!-- Slot Selection -->
       <div class="radio-group">
-        <label><input type="radio" name="slot" value="mon" required> Monday 08:00 - 15h30</label>
-        <label><input type="radio" name="slot" value="tue"> Tuesday & Wednesday 09:00 - 15h30</label>
-        <label><input type="radio" name="slot" value="thu"> Thursday 09:00 - 14h30</label>
+        <label><input type="radio" name="slot" value="mon" required> Monday 08:00 - 15:30</label>
+        <label><input type="radio" name="slot" value="tue"> Tuesday & Wednesday 09:00 - 15:30</label>
+        <label><input type="radio" name="slot" value="thu"> Thursday 09:00 - 14:30</label>
       </div>
 
       <!-- Booking Button -->
@@ -137,10 +138,12 @@
     </form>
 
     <!-- Back to Home -->
-    <a href="Faculties.html" class="back-btn">⬅ Previous</a>
-    <a href="Default.html" class="back-btn">⬅ Log out</a>
-    <a href="Profile.html" class="back-btn"> Update Details</a>
+    <a href="{{ url_for('faculties') }}" class="back-btn">⬅ Previous</a>
+    <a href="{{ url_for('logout') }}" class="back-btn">⬅ Log out</a>
+    <a href="{{ url_for('profile') }}" class="back-btn">Update Details</a>
 
   </div>
+    <!-- Include PyBot here -->
+    {% include "chatbot.html" %}
 </body>
 </html>

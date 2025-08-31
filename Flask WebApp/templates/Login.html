@@ -1,8 +1,10 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
+  <meta charset="UTF-8">
   <title>Login - University of Kasi</title>
-  <link rel="stylesheet" href="style2.css">
+  <link rel="stylesheet" href="{{ url_for('static', filename='style2.css') }}">
+  <link rel="stylesheet" href="{{ url_for('static', filename='chat-box.css') }}">
   <style>
     body {
       margin: 0;
@@ -72,16 +74,24 @@
   </style>
 </head>
 <body>
+
   <div class="container">
     <h2>Returning Student Login</h2>
-    <form action="faculties.html" method="get">
-      <label>Student ID:</label>
-      <input type="text" required>
-      <label>Password:</label>
-      <input type="password" required>
+    <form action="{{ url_for('login') }}" method="POST">
+      <label for="username">Student ID:</label>
+      <input type="text" name="username" required>
+
+      <label for="password">Password:</label>
+      <input type="password" name="password" required>
+
       <button type="submit" class="btn">Login</button>
     </form>
-    <a href="Default.html" class="back">⬅ Back</a>
+    <a href="{{ url_for('index') }}" class="back">⬅ Back</a>
+
   </div>
+
+  <!-- Chatbot Include -->
+  {% include 'chatbot.html' %}
+
 </body>
 </html>

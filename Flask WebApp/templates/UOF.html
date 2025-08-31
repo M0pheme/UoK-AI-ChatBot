@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <title>University of Kasi</title>
-  <link rel="stylesheet" href="style.css">
+  <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
   <style>
     body {
       font-family: Arial, sans-serif;
@@ -119,7 +119,7 @@
         <li><a href="#research">Research</a></li>
         <li><a href="#contact">Contact</a></li>
         <!-- Student Portal button -->
-        <li><a href="Default.html" class="btn">Student Portal</a></li>
+        <li><a href="{{ url_for('default') }}" class="btn">Student Portal</a></li>
       </ul>
     </nav>
   </header>
@@ -129,7 +129,7 @@
     <div class="hero-text">
       <h2>Welcome to the University of Kasi</h2>
       <p>Shaping leaders of tomorrow through education, innovation and community impact.</p>
-      <a href="Default.html" class="btn">Go to Student Portal</a>
+      <a href="{{ url_for('default') }}" class="btn">Go to Student Portal</a>
     </div>
   </section>
 
@@ -197,5 +197,8 @@
   <footer>
     <p>&copy; 2025 University of Kasi. All Rights Reserved.</p>
   </footer>
+
+    <!-- Include PyBot Chat -->
+  {% include "chatbot.html" %}
 </body>
 </html>

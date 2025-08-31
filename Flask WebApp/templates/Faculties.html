@@ -2,7 +2,8 @@
 <html>
 <head>
   <title>Faculties - University of Kasi</title>
-  <link rel="stylesheet" href="style2.css">
+  <link rel="stylesheet" href="{{ url_for('static', filename='style2.css') }}">
+
 </head>
 <body>
   <div class="container">
@@ -104,9 +105,10 @@
       </select>
     </div>
 
-    <a href="index.html" class="back">⬅ Logout</a>
-    <a href="Booking & consultation.html" class="btn">Booking & consultation</a>
-    
+    <a href="{{ url_for('logout') }}" class="back">⬅ Logout</a>
+    <a href="{{ url_for('booking') }}" class="btn">Booking & Consultation</a>
   </div>
+    <!-- Include PyBot here -->
+    {% include "chatbot.html" %}
 </body>
 </html>
