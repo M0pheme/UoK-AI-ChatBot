@@ -32,6 +32,12 @@
       "context_set": ""
     },
     {
+      "tag": "Booking-Selection",
+      "patterns": [ "IT","I Would like to make a booking for Admin services", "Library" ],
+      "responses": [ "Great, please proceed to the following link : {link}", "Check out the following link to make a booking: {link}" ],
+      "context_set": ""
+    },
+    {
       "tag": "Who",
       "patterns": [ "Who are you?", "What servces do you offer?", "What do you do?", "Whats your purpose?", "Tell me about yourself!" ],
       "responses": [ "Hi, My name is UoKbot- I?m your friendly AI chatbot here to assist you with all your UoK related questions" ],

@@ -1,7 +1,8 @@
 from flask import Flask, request, jsonify, render_template, redirect, url_for, session, flash
 import sqlite3
 import os
-from utils import get_response, predict_class
+from utils import get_response, predict_class, get_db, role_required, init_db
+
 
 app = Flask(__name__, template_folder='templates')
 app.secret_key = "supersecretkey"
@@ -17,8 +18,10 @@ def index():
     return render_template('UOF.html')
 
 # Default login/registration Page
+@app.route("/default")
 def default():
     return render_template('Default.html')
+
 
 # Login Page
 @app.route("/login", methods=["GET", "POST"])
@@ -53,13 +56,31 @@ def logout():
     return redirect(url_for("home"))
 
 @app.route("/notices-post")
-def notices-post():
+def notices_post():
     return render_template("Notices-post.html")
 
 
 #-----------------------------------------------------
 # Admin routes
 #-----------------------------------------------------
+@app.route("/admin/login", methods=["GET", "POST"])
+def admin_login():
+    if request.method == "POST":
+        username = request.form["username"]
+        password = request.form["password"]
+
+        # ✅ Hardcoded admin check for now (replace with DB lookup later)
+        if username == "admin" and password == "admin123":
+            session["user_id"] = username
+            session["role"] = "admin"
+            flash("Welcome, Admin!", "success")
+            return redirect(url_for("notices_admin"))  # send to admin notices page
+        else:
+            flash("Invalid credentials.", "error")
+            return redirect(url_for("admin_login"))
+
+    return render_template("admin_login.html")
+
 @app.route("/admin/notices")
 @role_required("admin")
 def notices_admin():
@@ -67,7 +88,7 @@ def notices_admin():
 
 @app.route("/admin/report")
 @role_required("admin")
-def report_admin()
+def report_admin():
     return render_template("Report.html")
 
 #------------------------------------------------------
@@ -83,11 +104,11 @@ def staff_profile():
 def notices_staff():
     return render_template("Notices.html")
 
-@app.route("staff/report")
+@app.route("/staff/report")
 @role_required("staff", "admin")
 def report_staff():
     # Filter booking/queries by staff's job_title
-    jpb_title = session.get("job_title")
+    job_title = session.get("job_title")
     return render_template("Report.html", job_title=job_title)
 
 
@@ -169,5 +190,6 @@ def handle_message():
 
 
 if __name__ == '__main__':
+    init_db()
     app.run(host='0.0.0.0', debug=True)
     print(os.path.exists("templates/chatbot.html"))

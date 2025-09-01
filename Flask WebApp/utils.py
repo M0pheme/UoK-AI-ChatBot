@@ -30,15 +30,19 @@ def get_db():
 # Role-based access control
 # ----------------------------------------------
 def role_required(*roles):
+    """
+    Restrict access to users with one of the given roles.
+    Example: @role_required("admin"), or @role_required("faculty", "admin")
+    """
     def wrapper(f):
         @wraps(f)
         def decorated_function(*args, **kwargs):
             if "user_id" not in session or "role" not in session:
-                flash("Please log in first.")
+                flash("Please log in first.", "error")
                 return redirect(url_for("login"))
             if session["role"] not in roles:
-                flash("Access denied.")
-                return redirect(url_for("home"))
+                flash("Access denied.", "error")
+                return redirect(url_for("index"))
             return f(*args, **kwargs)
         return decorated_function
     return wrapper
