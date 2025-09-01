@@ -6,37 +6,118 @@ from utils import get_response, predict_class
 app = Flask(__name__, template_folder='templates')
 app.secret_key = "supersecretkey"
 
-# Ensure database directory exists
-os.makedirs("database", exist_ok=True)
-DB_PATH = os.path.join("database", "bot.db")
+#-------------------------------------------------------
+# Public routes
+#-------------------------------------------------------
 
-
-# ------------------- Routes -------------------
 
 # Home / Default page
 @app.route('/')
 def index():
     return render_template('UOF.html')
+
 # Default login/registration Page
 def default():
     return render_template('Default.html')
-# Login page
-@app.route('/login', methods=['GET', 'POST'])
+
+# Login Page
+@app.route("/login", methods=["GET", "POST"])
 def login():
-    if request.method == 'POST':
-        username = request.form.get('username')
-        password = request.form.get('password')
-        # Authenticate user here
-        flash("Logged in successfully", "success")
-        return redirect(url_for('index'))
-    return render_template('Login.html')
+    if request.method == "POST":
+        username = request.form["username"]
+        password = request.form["password"]
+
+        conn = get_db()
+        user = conn.execute(
+            "SELECT * FROM users WHERE username=? AND password=?",
+            (username, password)
+        ).fetchone()
+        conn.close()
+
+        if user:
+            session["user_id"] = user["id"]
+            session["role"] = user["role"]
+            session["username"] = user["username"]
+            session["job_title"] = user["job_title"]
+            flash(f"Welcome {username}!")
+            return redirect(url_for("home"))
+        else:
+            flash("Invalid login.")
+    return render_template("login.html")
+
+# Logout and redirect to home page
+@app.route("/logout")
+def logout():
+    session.clear()
+    flash("Logged out.")
+    return redirect(url_for("home"))
+
+@appp.route("/notices-post")
+def notices-post():
+    return render_template("Notices-post.html")
 
 
+#-----------------------------------------------------
+# Admin routes
+#-----------------------------------------------------
+@app.route("/admin/notices")
+@role_required("admin")
+def notices_admin():
+    return render_template("Notices.html")
+
+@app.route("/admin/report")
+@role_required("admin")
+def report_admin("admin")
+    return render_template("Report.html")
+
+#------------------------------------------------------
+# Staff routes
+#------------------------------------------------------
+@app.route("/staff/profile")
+@role_required("staff")
+def staff_profile():
+    retrn render_template("Profile.html")
+
+@app.route("/staff/notices")
+@role_required("staff", "admin")
+def notices_staff():
+    return render_template("Notices.html")
+
+@app.route("staff/report")
+@role_required("staff", "admin")
+def report_staff():
+    # Filter booking/queries by staff's job_title
+    jpb_title = session.get("job_title")
+    return render_template("Report.html", job_title=job_title)
 
 
-# Registration page
-@app.route('/register', methods=['GET', 'POST'])
+#---------------------------------------------------------
+# Student routes
+# ---------------------------------------------------------
+@app.route("/student/profile")
+@role_required("student")
+def student_profile():
+    return render_template("Profile.html")
+
+@app.route("/student/register", methods=["GET", "POST"])
 def register():
+    if request.method == "POST":
+        username = request.form["username"]
+        password = request.form["password"]
+
+        conn = get_db()
+        try:
+            conn.execute(
+                "INSERT INTO users (username, password, role) VALUES (?, ?, 'student')",
+                (username, password)
+            )
+            conn.commit()
+            flash("Registration successful! You can now log in.")
+            return redirect(url_for("login"))
+        except:
+            flash("Username already exists.")
+        finally:
+            conn.close()
     return render_template('Register.html')
 
 
@@ -46,7 +127,7 @@ def uof():
     return render_template('UOF.html')
 
 # Booking & Consultations page
-@app.route('/booking', methods=['GET', 'POST'])
+@app.route('/student/booking', methods=['GET', 'POST'])
 def booking():
     if request.method == 'POST':
         # You can handle form submission here
@@ -65,10 +146,6 @@ def booking():
 def faculties():
     return render_template('Faculties.html')
 
-# Delete Notices page
-@app.route('/delete_notices')
-def delete_notices():
-    return render_template('Notices.html')
 
 # Profile / Update Details page
 @app.route('/profile', methods=['GET', 'POST'])
@@ -87,11 +164,6 @@ def handle_message():
     response = get_response(intents_list)
     return jsonify({'response': response})
 
-# Logout route (redirects to home)
-@app.route('/logout')
-def logout():
-    session.clear()
-    return redirect(url_for('default'))
 
 # curl -X POST http://127.0.0.1:5000/handle_message -d '{"message":"what is coding"}' -H "Content-Type: application/json"
 
