@@ -52,7 +52,7 @@ def logout():
     flash("Logged out.")
     return redirect(url_for("home"))
 
-@appp.route("/notices-post")
+@app.route("/notices-post")
 def notices-post():
     return render_template("Notices-post.html")
 
@@ -67,7 +67,7 @@ def notices_admin():
 
 @app.route("/admin/report")
 @role_required("admin")
-def report_admin("admin")
+def report_admin()
     return render_template("Report.html")
 
 #------------------------------------------------------
@@ -76,7 +76,7 @@ def report_admin("admin")
 @app.route("/staff/profile")
 @role_required("staff")
 def staff_profile():
-    retrn render_template("Profile.html")
+    return render_template("Profile.html")
 
 @app.route("/staff/notices")
 @role_required("staff", "admin")
