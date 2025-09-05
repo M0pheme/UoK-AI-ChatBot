@@ -1,55 +1,179 @@
 {
   "intents": [
-
     {
       "tag": "greeting",
-      "patterns": [ "Hi", "How are you", "Is anyone there?","Continue", "Hello", "Good day", "Whats up", "Hey", "greetings" ],
-      "responses": [ "I am the University of Kasi Chatbot. How can I assist you?", "Hi there, how can I help?", "Good to see you again!"],
-      "context_set": ""
+      "patterns": [
+        "hello",
+        "hi",
+        "hey",
+        "good morning",
+        "good afternoon",
+        "good evening",
+        "greetings",
+        "what's up",
+        "howdy"
+      ],
+      "responses": [
+        "Hello! I'm ChatPy, your UoK AI assistant. How can I help you today?",
+        "Hi there! Welcome to the University of Kimberly. What would you like to know?",
+        "Hey! I'm here to help with information about UoK. What can I assist you with?",
+        "Good day! I'm ChatPy, ready to answer your questions about the University of Kimberly."
+      ]
+    },
+    {
+      "tag": "onboarding_help",
+      "patterns": [
+        "help",
+        "what can you do",
+        "how do you work",
+        "what do you know",
+        "guide me",
+        "assistance",
+        "support"
+      ],
+      "responses": [
+        "I can help you with information about university applications, student fees, academic programs, and general inquiries about the University of Kimberly. What specific topic would you like to explore?",
+        "I'm here to assist with questions about admissions, fees, courses, campus life, and more! What would you like to know about UoK?",
+        "You can ask me about applications, tuition fees, academic programs, campus facilities, and university policies. How can I help you today?"
+      ]
+    },
+    {
+      "tag": "applications",
+      "patterns": [
+        "how to apply",
+        "application process",
+        "apply for admission",
+        "application requirements",
+        "admission",
+        "enroll",
+        "registration",
+        "how do i apply",
+        "application deadline",
+        "apply online"
+      ],
+      "responses": [
+        "To apply to the University of Kimberly, you can submit your application online through our student portal. You'll need your academic transcripts, ID document, and proof of payment for the application fee. Applications typically open in April for the following year.",
+        "The application process involves: 1) Complete the online application form, 2) Submit required documents (ID, transcripts, etc.), 3) Pay the application fee, 4) Wait for admission decision. Would you like more details about any of these steps?",
+        "You can apply online at our official website. Make sure you have all required documents ready, including your matric certificate or equivalent qualifications. Application deadlines are usually in September for the following academic year."
+      ]
+    },
+    {
+      "tag": "fees",
+      "patterns": [
+        "tuition fees",
+        "how much does it cost",
+        "fees",
+        "tuition",
+        "cost",
+        "price",
+        "payment",
+        "financial aid",
+        "bursary",
+        "scholarship",
+        "NSFAS"
+      ],
+      "responses": [
+        "Tuition fees vary by program and level of study. Undergraduate programs typically range from R35,000 to R65,000 per year. We also offer various financial aid options including NSFAS funding, bursaries, and scholarships. Would you like information about a specific program?",
+        "The University of Kimberly offers competitive fees with payment plan options available. We encourage students to apply for NSFAS funding if eligible. For exact fee structures, please check our website or contact the finance office directly.",
+        "Fees depend on your chosen field of study. We have options for financial assistance including merit-based scholarships and need-based bursaries. NSFAS applications are processed annually for qualifying students."
+      ]
+    },
+    {
+      "tag": "programs",
+      "patterns": [
+        "courses",
+        "programs",
+        "degrees",
+        "what can i study",
+        "faculties",
+        "departments",
+        "majors",
+        "subjects",
+        "fields of study",
+        "qualifications"
+      ],
+      "responses": [
+        "The University of Kimberly offers a wide range of undergraduate and postgraduate programs across various faculties including Business, Engineering, Health Sciences, Education, and Liberal Arts. What field interests you most?",
+        "We have excellent programs in fields like Computer Science, Business Administration, Nursing, Education, Engineering, and many more. Each program is designed to meet industry standards and prepare you for your career.",
+        "Our academic offerings include certificates, diplomas, bachelor's degrees, and postgraduate qualifications. Popular programs include IT, Healthcare, Business Management, and Teacher Training. Would you like details about a specific program?"
+      ]
+    },
+    {
+      "tag": "campus",
+      "patterns": [
+        "campus life",
+        "facilities",
+        "accommodation",
+        "residence",
+        "library",
+        "sports",
+        "student life",
+        "clubs",
+        "activities"
+      ],
+      "responses": [
+        "Our campus offers modern facilities including well-equipped libraries, computer labs, sports facilities, and comfortable student accommodation. We have various clubs and societies for students to join and engage in campus life.",
+        "Campus life at UoK is vibrant with numerous student organizations, sports teams, cultural activities, and academic support services. Our residence facilities provide a safe and conducive environment for learning.",
+        "We provide excellent facilities including study spaces, recreational areas, dining facilities, and on-campus accommodation. There are plenty of opportunities to get involved in student activities and build lasting friendships."
+      ]
+    },
+    {
+      "tag": "contact",
+      "patterns": [
+        "contact",
+        "phone number",
+        "email",
+        "address",
+        "location",
+        "how to reach",
+        "where are you located",
+        "visit"
+      ],
+      "responses": [
+        "You can contact the University of Kimberly through our main office. For specific inquiries, I recommend visiting our official website or calling our student services center. They can direct you to the right department for your needs.",
+        "Our campus is located in Kimberley, Northern Cape. For detailed contact information and office hours, please check our website or contact our admissions office directly.",
+        "For immediate assistance, you can reach out through our official communication channels. Our student support team is available to help with admissions, academic, and general inquiries."
+      ]
+    },
+    {
+      "tag": "limit_notice",
+      "patterns": [
+        "message limit",
+        "10 messages",
+        "session limit",
+        "chat limit"
+      ],
+      "responses": [
+        "Please note that each chat session is limited to 10 messages to ensure fair usage for all students. If you need further assistance, you can start a new session or contact our support team directly.",
+        "This session allows up to 10 messages. This helps us serve more students effectively. For extended support, please reach out through our other contact channels."
+      ]
     },
     {
       "tag": "goodbye",
-      "patterns": [ "Exit","cya", "See you later", "Goodbye", "I am Leaving", "Have a Good day", "bye", "cao", "see ya" ],
-      "responses": [ "Sad to see you go :(", "Talk to you later", "Goodbye!" ],
-      "context_set": ""
+      "patterns": [
+        "bye",
+        "goodbye",
+        "see you later",
+        "thanks",
+        "thank you",
+        "that's all",
+        "end chat",
+        "exit"
+      ],
+      "responses": [
+        "Thank you for using ChatPy! Good luck with your university journey. Feel free to start a new session if you have more questions in the future.",
+        "Goodbye! I hope I was able to help you today. Best wishes for your studies at the University of Kimberly!",
+        "Thanks for chatting with me! Remember, you can always reach out through our official channels for more detailed assistance. Take care!"
+      ]
     },
     {
-      "tag": "UoK",
-      "patterns": [ "What is UoK?", "What Does UoK do?", "Tell me about UoK", "Tell me about University of Kasi", "What is software development?" ],
-      "responses": [ "University of Kasi (UoK) is a prestigious educational institution founded in 1998 with a mission to provide holistic, innovative, and inclusive education. Located in the serene town of Lalaland, Kasi is renowned for its. commitment to academic excellence, character development, and fostering citizenship. It offers great leadership involving diverse political parties and their lead candidates elected by students for any of their issues." ],
-      "context_set": ""
-    },
-    {
-      "tag": "how",
-      "patterns": [ "How are you?", "How is your day?", "How do you feel?", "Are you good?" ],
-      "responses": [ "I am fine, thanks for asking!", "I feel great!" ],
-      "context_set": ""
-    },
-    {
-      "tag": "Booking",
-      "patterns": [ "Booking","I Would like to make a booking", "Can I make a booking" ],
-      "responses": [ "Sure, what kind of service would you like to make a booking for?", "yeah, what would you like to book for?" ],
-      "context_set": ""
-    },
-    {
-      "tag": "Who",
-      "patterns": [ "Who are you?", "What servces do you offer?", "What do you do?", "Whats your purpose?", "Tell me about yourself!" ],
-      "responses": [ "Hi, My name is UoKbot- I�m your friendly AI chatbot here to assist you with all your UoK related questions" ],
-      "context_set": ""
-    },
-    {
-      "tag": "FAQs",
-      "patterns": ["Ask", "I want to ask you something", "I have a specific question I want to ask"],
-      "responses": ["Sure go ahead, I will do my best to assist you where I can"],
-      "context_set": "Handling_FAQs"
-    },
-    {
-      "tag": "Applications",
-      "patterns": ["Are applications open?", "When does Applications for 2026 close","When does Applications for 2026 open", "Can I still apply for admission"],
-      "responses": ["Yes!! Do not miss out, respond with relevent applications info and links "],
-      "context_set": "FAQs_Handled"
+      "tag": "fallback",
+      "patterns": [],
+      "responses": [
+        "I'm not sure about that specific topic. Could you try asking about applications, fees, programs, or campus life?",
+        "I didn't quite understand your question. I can help with information about admissions, tuition, courses, and university services. What would you like to know?",
+        "That's outside my knowledge area. I specialize in university information like applications, fees, programs, and campus facilities. How can I assist you with these topics?"
+      ]
     }
-
-
   ]
 }

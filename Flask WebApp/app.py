@@ -1,195 +1,203 @@
-from flask import Flask, request, jsonify, render_template, redirect, url_for, session, flash
+from flask import Flask, render_template, request, jsonify, session, make_response
 import sqlite3
+import json
+import random
+import re
 import os
-from utils import get_response, predict_class, get_db, role_required, init_db
+from datetime import datetime
+import uuid
+
+app = Flask(__name__)
+app.secret_key = os.environ.get('SECRET_KEY', 'your-secret-key-change-this-in-production')
 
 
-app = Flask(__name__, template_folder='templates')
-app.secret_key = "supersecretkey"
-
-#-------------------------------------------------------
-# Public routes
-#-------------------------------------------------------
 
 
-# Home / Default page
+
+def init_db():
+    conn = sqlite3.connect('chatpy.db')
+    c = conn.cursor()
+
+    # Users table
+    c.execute('''CREATE TABLE IF NOT EXISTS users (
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        full_name TEXT NOT NULL,
+        email TEXT NOT NULL,
+        international TEXT,
+        student_category TEXT,
+        student_type TEXT,
+        grade TEXT,
+        province TEXT,
+        school_name TEXT,
+        student_number TEXT,
+        created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+    )''')
+
+    # Sessions table
+    c.execute('''CREATE TABLE IF NOT EXISTS sessions (
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        session_id TEXT UNIQUE NOT NULL,
+        user_id INTEGER NOT NULL,
+        created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+        FOREIGN KEY (user_id) REFERENCES users (id)
+    )''')
+
+    # Messages table
+    c.execute('''CREATE TABLE IF NOT EXISTS messages
+    (
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        session_id TEXT NOT NULL,
+        sender TEXT NOT NULL,
+        content TEXT NOT NULL,
+        timestamp TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+        FOREIGN KEY (session_id) REFERENCES sessions (session_id)
+        )''')
+
+    conn.commit()
+    conn.close()
+
+
+def get_db():
+    conn = sqlite3.connect('chatpy.db')
+    conn.row_factory = sqlite3.Row
+    return conn
+
+
+def insert_message(session_id, sender, content):
+    conn = get_db()
+    c = conn.cursor()
+    c.execute('INSERT INTO messages (session_id, sender, content) VALUES (?, ?, ?)',
+              (session_id, sender, content))
+    conn.commit()
+    conn.close()
+
+def count_session_messages(session_id, sender='user'):
+    conn = get_db()
+    c = conn.cursor()
+    c.execute('SELECT COUNT(*) FROM messages WHERE session_id = ? AND sender = ?',
+              (session_id, sender))
+    count = c.fetchone()[0]
+    conn.close()
+    return count
+
+# Load intents
+def load_intents():
+    try:
+        with open('intents.json', 'r') as file:
+            return json.load(file)
+    except FileNotFoundError:
+        return {"intents": []}
+
+
+def bot_reply(text):
+    intents = load_intents()
+    text_lower = text.lower()
+
+    # Find matching intent
+    for intent in intents.get('intents', []):
+        for pattern in intent.get('patterns', []):
+            if re.search(pattern.lower(), text_lower):
+                return random.choice(intent.get('responses', ['I understand.']))
+
+    # Fallback response
+    fallback_responses = [
+        "I'm not sure about that. Can you try asking about applications, fees, or general university information?",
+        "I didn't quite understand. Would you like to know about university applications or student fees?",
+        "Could you rephrase that? I can help with information about university applications, fees, and general inquiries."
+    ]
+    return random.choice(fallback_responses)
+
+
+# Routes
 @app.route('/')
 def index():
-    return render_template('UOF.html')
-
-# Default login/registration Page
-@app.route("/default")
-def default():
-    return render_template('Default.html')
+    return render_template('chatbot.html')  # Now serves the chat widget directly
 
 
-# Login Page
-@app.route("/login", methods=["GET", "POST"])
-def login():
-    if request.method == "POST":
-        username = request.form["username"]
-        password = request.form["password"]
+@app.route('/chat')
+def chat():
+    return render_template('chatbot.html')
 
+
+@app.route('/api/save_user', methods=['POST'])
+def save_user():
+    try:
+        data = request.get_json()
+
+        # Insert user data
         conn = get_db()
-        user = conn.execute(
-            "SELECT * FROM users WHERE username=? AND password=?",
-            (username, password)
-        ).fetchone()
+        c = conn.cursor()
+        c.execute('''INSERT INTO users (full_name, email, international, student_category,
+                                        student_type, grade, province, school_name, student_number)
+                     VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)''',
+                  (data.get('full_name'), data.get('email'), data.get('international'),
+                   data.get('student_category'), data.get('student_type'), data.get('grade'),
+                   data.get('province'), data.get('school_name'), data.get('student_number')))
+
+        user_id = c.lastrowid
+
+        # Create session
+        session_id = str(uuid.uuid4())
+        c.execute('INSERT INTO sessions (session_id, user_id) VALUES (?, ?)',
+                  (session_id, user_id))
+
+        conn.commit()
         conn.close()
 
-        if user:
-            session["user_id"] = user["id"]
-            session["role"] = user["role"]
-            session["username"] = user["username"]
-            session["job_title"] = user["job_title"]
-            flash(f"Welcome {username}!")
-            return redirect(url_for("home"))
-        else:
-            flash("Invalid login.")
-    return render_template("login.html")
+        # Set session cookie
+        response = make_response(jsonify({'success': True, 'session_id': session_id}))
+        response.set_cookie('chatpy_session', session_id, max_age=86400)  # 24 hours
 
-# Logout and redirect to home page
-@app.route("/logout")
-def logout():
-    session.clear()
-    flash("Logged out.")
-    return redirect(url_for("home"))
+        return response
 
-@app.route("/notices-post")
-def notices_post():
-    return render_template("Notices-post.html")
+    except Exception as e:
+        return jsonify({'success': False, 'error': str(e)}), 500
 
 
-#-----------------------------------------------------
-# Admin routes
-#-----------------------------------------------------
-@app.route("/admin/login", methods=["GET", "POST"])
-def admin_login():
-    if request.method == "POST":
-        username = request.form["username"]
-        password = request.form["password"]
+@app.route('/api/send_message', methods=['POST'])
+def send_message():
+    try:
+        data = request.get_json()
+        session_id = data.get('session_id') or request.cookies.get('chatpy_session')
+        user_message = data.get('message', '').strip()
 
-        # ✅ Hardcoded admin check for now (replace with DB lookup later)
-        if username == "admin" and password == "admin123":
-            session["user_id"] = username
-            session["role"] = "admin"
-            flash("Welcome, Admin!", "success")
-            return redirect(url_for("notices_admin"))  # send to admin notices page
-        else:
-            flash("Invalid credentials.", "error")
-            return redirect(url_for("admin_login"))
+        if not session_id or not user_message:
+            return jsonify({'success': False, 'error': 'Missing session_id or message'}), 400
 
-    return render_template("admin_login.html")
+        # Check message limit (10 user messages per session)
+        user_sent = count_session_messages(session_id, 'user')
+        if user_sent >= 10:
+            return jsonify({
+                'success': False,
+                'error': 'limit_reached',
+                'message': 'You have reached the maximum of 10 messages for this session.'
+            })
 
-@app.route("/admin/notices")
-@role_required("admin")
-def notices_admin():
-    return render_template("Notices.html")
+        # Save user message
+        insert_message(session_id, 'user', user_message)
 
-@app.route("/admin/report")
-@role_required("admin")
-def report_admin():
-    return render_template("Report.html")
+        # Generate bot response
+        bot_response = bot_reply(user_message)
 
-#------------------------------------------------------
-# Staff routes
-#------------------------------------------------------
-@app.route("/staff/profile")
-@role_required("staff")
-def staff_profile():
-    return render_template("Profile.html")
+        # Check if this will be the 10th user message after saving
+        user_sent_after = count_session_messages(session_id, 'user')
+        if user_sent_after >= 10:
+            bot_response += "\n\nThis was your 10th message. This session has now ended. Thank you for using ChatPy!"
 
-@app.route("/staff/notices")
-@role_required("staff", "admin")
-def notices_staff():
-    return render_template("Notices.html")
+        # Save bot message
+        insert_message(session_id, 'bot', bot_response)
 
-@app.route("/staff/report")
-@role_required("staff", "admin")
-def report_staff():
-    # Filter booking/queries by staff's job_title
-    job_title = session.get("job_title")
-    return render_template("Report.html", job_title=job_title)
+        return jsonify({
+            'success': True,
+            'response': bot_response,
+            'messages_left': max(0, 10 - user_sent_after),
+            'session_ended': user_sent_after >= 10
+        })
 
+    except Exception as e:
+        return jsonify({'success': False, 'error': str(e)}), 500
 
-#---------------------------------------------------------
-# Student routes
-# ---------------------------------------------------------
-@app.route("/student/profile")
-@role_required("student")
-def student_profile():
-    return render_template("Profile.html")
-
-@app.route("/student/register", methods=["GET", "POST"])
-def register():
-    if request.method == "POST":
-        username = request.form["username"]
-        password = request.form["password"]
-
-        conn = get_db()
-        try:
-            conn.execute(
-                "INSERT INTO users (username, password, role) VALUES (?, ?, 'student')",
-                (username, password)
-            )
-            conn.commit()
-            flash("Registration successful! You can now log in.")
-            return redirect(url_for("login"))
-        except:
-            flash("Username already exists.")
-        finally:
-            conn.close()
-    return render_template('Register.html')
-
-
-# UOF page
-@app.route('/UOF')
-def uof():
-    return render_template('UOF.html')
-
-# Booking & Consultations page
-@app.route('/student/booking', methods=['GET', 'POST'])
-def booking():
-    if request.method == 'POST':
-        # You can handle form submission here
-        fname = request.form.get('fname')
-        lname = request.form.get('lname')
-        classification = request.form.get('classification')
-        service = request.form.get('service')
-        slot = request.form.get('slot')
-        # Save to database or text file here
-        flash('Booking submitted successfully!', 'success')
-        return redirect(url_for('booking'))
-    return render_template('Booking.html')
-
-# Faculties page
-@app.route('/faculties')
-def faculties():
-    return render_template('Faculties.html')
-
-
-# Profile / Update Details page
-@app.route('/profile', methods=['GET', 'POST'])
-def profile():
-    if request.method == 'POST':
-        # Handle profile update form submission
-        flash('Profile updated successfully!', 'success')
-        return redirect(url_for('profile'))
-    return render_template('Profile.html')
-
-# Chatbot message handler
-@app.route('/handle_message', methods=['POST'])
-def handle_message():
-    message = request.json['message']
-    intents_list = predict_class(message)
-    response = get_response(intents_list)
-    return jsonify({'response': response})
-
-
-# curl -X POST http://127.0.0.1:5000/handle_message -d '{"message":"what is coding"}' -H "Content-Type: application/json"
-
-
+init_db()
 if __name__ == '__main__':
-    init_db()
-    app.run(host='0.0.0.0', debug=True)
-    print(os.path.exists("templates/chatbot.html"))
+
+    app.run(debug=True)
