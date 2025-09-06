@@ -1,0 +1,292 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>University of Kasi Portal</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+  <style>
+    body {
+      margin: 0;
+      font-family: Arial, sans-serif;
+      background: url('https://images.unsplash.com/photo-1524995997946-a1c2e315a42f?ixlib=rb-4.0.3&auto=format&fit=crop&w=1400&q=80') no-repeat center center/cover;
+      height: 100vh;
+      display: flex;
+      color: #fff;
+    }
+
+    /* Sidebar */
+    .sidebar {
+      width: 260px;
+      background: rgba(0, 0, 0, 0.8);
+      padding: 20px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      transition: width 0.3s ease;
+    }
+    .sidebar.collapsed { width: 80px; }
+    .sidebar .toggle-btn { align-self: flex-end; cursor: pointer; font-size: 18px; margin-bottom: 20px; }
+    .sidebar .logo { text-align: center; margin-bottom: 30px; }
+    .sidebar .logo i { font-size: 50px; margin-bottom: 10px; }
+    .sidebar h2 { margin: 0; font-size: 22px; white-space: nowrap; }
+
+    .nav-btn {
+      width: 100%;
+      background: #f4d03f;
+      color: #000;
+      border: none;
+      padding: 12px;
+      margin: 10px 0;
+      font-size: 16px;
+      border-radius: 6px;
+      cursor: pointer;
+      transition: background 0.3s;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+    }
+    .nav-btn:hover { background: #d4ac0d; }
+
+    /* Content */
+    .content { flex: 1; padding: 20px; overflow-y: auto; }
+    .hero { text-align: center; padding: 100px 20px; background: rgba(0,0,0,0.6); border-radius: 12px; margin: 20px 0; }
+    .hero h2 { font-size: 36px; margin-bottom: 15px; }
+    .btn { background: #f4d03f; color: #000 !important; padding: 10px 18px; border-radius: 6px; font-weight: bold; text-decoration: none; transition: background 0.3s; }
+    .btn:hover { background: #d4ac0d; }
+    .section { background: rgba(0,0,0,0.6); padding: 40px 20px; margin: 20px 0; border-radius: 10px; text-align: center; }
+
+    .form-container { max-width: 600px; margin: 20px auto; background: rgba(255,255,255,0.1); padding: 30px; border-radius: 12px; text-align: left; }
+    .form-container h2 { text-align: center; margin-bottom: 20px; color: #f4d03f; }
+    .form-container input, .form-container select, .form-container textarea {
+      width: 100%; padding: 10px; margin: 10px 0; border-radius: 6px; border: none; font-size: 14px;
+    }
+    .form-container button { width: 100%; padding: 12px; margin-top: 10px; background: #f4d03f; border: none; border-radius: 6px; font-weight: bold; cursor: pointer; }
+    .form-container button:hover { background: #d4ac0d; }
+
+    table { width: 100%; border-collapse: collapse; color: #fff; margin-top: 20px; }
+    th, td { padding: 12px; border-bottom: 1px solid #f4d03f; text-align: left; }
+    th { background: rgba(255,255,255,0.1); }
+    tr:hover { background: rgba(255,255,255,0.05); }
+
+    /* Panel style for reports */
+    .panel { background: rgba(255,255,255,0.1); border-radius: 8px; padding: 16px; margin-top: 20px; }
+    .panel h2 { margin-top: 0; font-size: 1.3rem; color: #f4d03f; }
+    .filter-group { margin-bottom: 14px; text-align: left; } /* left align contents */
+    .filter-group strong { display: block; margin-bottom: 4px; }
+    .filter-group label { margin-left: 8px; }
+
+    footer { text-align: center; padding: 15px; background: rgba(0,0,0,0.7); border-radius: 10px; margin-top: 20px; }
+
+  </style>
+</head>
+<body>
+  <!-- Sidebar -->
+  <div class="sidebar" id="sidebar">
+    <div class="toggle-btn" onclick="toggleSidebar()"><i class="fas fa-bars"></i></div>
+    <div class="logo"><i class="fas fa-university"></i><h2 id="logo-text">UOK Portal</h2></div>
+    <button class="nav-btn" onclick="showSection('admin')"><i class="fas fa-user-shield"></i> <span class="btn-text">Maintain Staff</span></button>
+    <button class="nav-btn" onclick="showSection('student')"><i class="fas fa-user-graduate"></i> <span class="btn-text">Maintain Student</span></button>
+    <button class="nav-btn" onclick="showSection('notices')"><i class="fas fa-bell"></i> <span class="btn-text">Maintain Notices</span></button>
+    <button class="nav-btn" onclick="showSection('report')"><i class="fas fa-file-alt"></i> <span class="btn-text">Generate Reports</span></button>
+  </div>
+
+  <!-- Content -->
+  <div class="content">
+    <!-- Home -->
+    <section class="hero" id="home-section">
+      <h2>Welcome, {{ user.full_name }}</h2>
+      <p>Your email: {{ user.email }} | Faculty: {{ user.faculty }}</p>
+    </section>
+
+    <!-- Staff CRUD -->
+    <section class="section" id="admin-section" style="display:none;">
+      <div class="form-container">
+        <h2>Manage Employees</h2>
+        <form id="employeeForm">
+          <input type="hidden" id="empId">
+          <input type="text" id="empFname" placeholder="First Name" required>
+          <input type="text" id="empLname" placeholder="Last Name" required>
+          <select id="empDept" required>
+            <option value="">Select Department</option>
+            <option value="Student support and counselling">Student support and counselling</option>
+            <option value="Lecture">Lecture</option>
+            <option value="Consultations">Consultations</option>
+            <option value="Library">Library</option>
+            <option value="IT Support">IT Support</option>
+            <option value="Administrative">Administrative</option>
+          </select>
+          <button type="submit">Save Employee</button>
+        </form>
+        <table>
+          <thead>
+            <tr><th>ID</th><th>First Name</th><th>Last Name</th><th>Department</th><th>Actions</th></tr>
+          </thead>
+          <tbody id="employeeTable"></tbody>
+        </table>
+      </div>
+    </section>
+
+    <!-- Student CRUD -->
+    <section class="section" id="student-section" style="display:none;">
+      <div class="form-container">
+        <h2>Manage Students</h2>
+        <form id="studentForm">
+          <input type="hidden" id="stuId">
+          <input type="text" id="stuFname" placeholder="First Name" required>
+          <input type="text" id="stuLname" placeholder="Last Name" required>
+          <select id="stuDept" required>
+            <option value="">Select Faculty</option>
+            <option value="Engineering">Engineering</option>
+            <option value="Economics & Management Sciences (EMS)">Economics & Management Sciences (EMS)</option>
+            <option value="Health Sciences">Health Sciences</option>
+            <option value="Law">Law</option>
+            <option value="Humanities & Education">Humanities & Education</option>
+            <option value="Natural & Physical Sciences">Natural & Physical Sciences</option>
+          </select>
+          <button type="submit">Save Student</button>
+        </form>
+        <table>
+          <thead>
+            <tr><th>ID</th><th>First Name</th><th>Last Name</th><th>Faculty</th><th>Actions</th></tr>
+          </thead>
+          <tbody id="studentTable"></tbody>
+        </table>
+      </div>
+    </section>
+
+    <!-- Notices -->
+    <section class="section" id="notices" style="display:none;">
+      <div class="form-container">
+        <h2>Send Notice</h2>
+        <label for="recipient">Send As:</label>
+        <select id="recipient"><option value="admin">Admin</option><option value="lecturer">Lecturer</option></select>
+        <label for="noticeText">Notice:</label>
+        <textarea id="noticeText" placeholder=""></textarea>
+        <button>Send Notice</button>
+        <button onclick="showSection('home')">Back to Home</button>
+      </div>
+    </section>
+
+    <!-- Reports -->
+    <section class="section" id="report-section" style="display:none;">
+      <div class="panel">
+        <h2>Student Analytics Report</h2>
+        <form method="POST" action="{{ url_for('records') }}">
+          <!-- Report Type -->
+          <div class="filter-group">
+            <strong>Report Type</strong>
+            <label><input type="radio" name="report_type" value="booking" checked> Booking Report</label>
+            <label><input type="radio" name="report_type" value="query"> Query Report</label>
+            <label><input type="radio" name="report_type" value="employees"> Employees</label>
+            <label><input type="radio" name="report_type" value="students"> Students</label>
+          </div>
+
+          <!-- Service Category (checkboxes) -->
+          <div class="filter-group">
+            <strong>Service Category</strong>
+            <label><input type="checkbox" name="service_category" value="counselling"> Student support and counselling</label>
+            <label><input type="checkbox" name="service_category" value="consultations"> Lecture Consultations</label>
+            <label><input type="checkbox" name="service_category" value="library"> Library</label>
+            <label><input type="checkbox" name="service_category" value="it"> IT Support</label>
+            <label><input type="checkbox" name="service_category" value="administrative"> Administrative</label>
+          </div>
+
+          <!-- Sort (checkboxes) -->
+          <div class="filter-group">
+            <strong>Sort</strong>
+            <label><input type="checkbox" name="sort" value="alphabetical" checked> Alphabetical order</label>
+            <label><input type="checkbox" name="sort" value="date"> Date</label>
+          </div>
+
+          <button type="submit" class="btn">Request Report</button>
+          <button type="button" class="btn" onclick="downloadExcel()">Download Excel</button>
+        </form>
+
+        {% if messages or bookings %}
+        <h3 style="margin-top:20px;color:#f4d03f;">Chatbot Messages</h3>
+        <table>
+          <thead><tr><th>ID</th><th>User</th><th>Session</th><th>Sender</th><th>Message</th><th>Timestamp</th></tr></thead>
+          <tbody>
+            {% for msg in messages %}
+            <tr><td>{{ msg.id }}</td><td>{{ msg.full_name or 'Unknown' }}</td><td>{{ msg.session_id }}</td><td>{{ msg.sender }}</td><td>{{ msg.content }}</td><td>{{ msg.timestamp }}</td></tr>
+            {% endfor %}
+          </tbody>
+        </table>
+
+        <h3 style="margin-top:20px;color:#f4d03f;">Bookings</h3>
+        <table>
+          <thead><tr><th>ID</th><th>First</th><th>Last</th><th>Classification</th><th>Service</th><th>Slot</th><th>Created</th></tr></thead>
+          <tbody>
+            {% for booking in bookings %}
+            <tr><td>{{ booking.id }}</td><td>{{ booking.fname }}</td><td>{{ booking.lname }}</td><td>{{ booking.classification }}</td><td>{{ booking.service }}</td><td>{{ booking.slot }}</td><td>{{ booking.created_at }}</td></tr>
+            {% endfor %}
+          </tbody>
+        </table>
+        {% endif %}
+      </div>
+    </section>
+
+    <footer><p>&copy; 2025 University of Kasi. All Rights Reserved.</p></footer>
+  </div>
+
+  <script>
+    function toggleSidebar() {
+      const sidebar = document.getElementById("sidebar");
+      sidebar.classList.toggle("collapsed");
+      const text = document.querySelectorAll(".btn-text, #logo-text");
+      text.forEach(el => el.style.display = sidebar.classList.contains("collapsed") ? "none" : "inline");
+    }
+    function showSection(section) {
+      const allSections = document.querySelectorAll('.hero, .section');
+      allSections.forEach(s => s.style.display = 'none');
+      if(section === 'home') { document.getElementById('home-section').style.display = 'block'; }
+      else { document.getElementById(section+'-section').style.display = 'block'; }
+    }
+
+    // CRUD Logic (in-memory for demo)
+    let empId=1, stuId=1;
+    document.getElementById("employeeForm").addEventListener("submit", e=>{
+      e.preventDefault();
+      const id=document.getElementById("empId").value || empId++;
+      const fname=document.getElementById("empFname").value;
+      const lname=document.getElementById("empLname").value;
+      const dept=document.getElementById("empDept").value;
+      addRow("employeeTable",id,fname,lname,dept,"emp");
+      e.target.reset();
+    });
+    document.getElementById("studentForm").addEventListener("submit", e=>{
+      e.preventDefault();
+      const id=document.getElementById("stuId").value || stuId++;
+      const fname=document.getElementById("stuFname").value;
+      const lname=document.getElementById("stuLname").value;
+      const dept=document.getElementById("stuDept").value;
+      addRow("studentTable",id,fname,lname,dept,"stu");
+      e.target.reset();
+    });
+    function addRow(tableId,id,fname,lname,dept,type){
+      const tbody=document.getElementById(tableId);
+      const row=document.createElement("tr");
+      row.innerHTML=`<td>${id}</td><td>${fname}</td><td>${lname}</td><td>${dept}</td>
+      <td><button onclick="editRow(this,'${type}')">Edit</button>
+      <button onclick="this.closest('tr').remove()">Delete</button></td>`;
+      tbody.appendChild(row);
+    }
+    function editRow(btn,type){
+      const row=btn.closest("tr").children;
+      if(type==="emp"){
+        document.getElementById("empId").value=row[0].textContent;
+        document.getElementById("empFname").value=row[1].textContent;
+        document.getElementById("empLname").value=row[2].textContent;
+        document.getElementById("empDept").value=row[3].textContent;
+      } else {
+        document.getElementById("stuId").value=row[0].textContent;
+        document.getElementById("stuFname").value=row[1].textContent;
+        document.getElementById("stuLname").value=row[2].textContent;
+        document.getElementById("stuDept").value=row[3].textContent;
+      }
+      btn.closest("tr").remove();
+    }
+  </script>
+</body>
+</html>
