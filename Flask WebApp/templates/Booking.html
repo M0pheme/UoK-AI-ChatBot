@@ -101,7 +101,6 @@
   <div class="container">
     <h1>Booking & Consultations</h1>
 
-    <form>
       <!-- User Info -->
       <form method="POST" action="{{ url_for('booking') }}">
       <label for="fname">First Name</label>
@@ -138,12 +137,11 @@
     </form>
 
     <!-- Back to Home -->
-    <a href="{{ url_for('faculties') }}" class="back-btn">⬅ Previous</a>
-    <a href="{{ url_for('logout') }}" class="back-btn">⬅ Log out</a>
-    <a href="{{ url_for('profile') }}" class="back-btn">Update Details</a>
+    <a href="{{ url_for('index') }}" class="back-btn">⬅ Previous</a>
+    <a href="{{ url_for('index') }}" class="back-btn">⬅ Log out</a>
+    <a href="{{ url_for('index') }}" class="back-btn">Update Details</a>
 
   </div>
-    <!-- Include PyBot here -->
-    {% include "chatbot.html" %}
+
 </body>
 </html>

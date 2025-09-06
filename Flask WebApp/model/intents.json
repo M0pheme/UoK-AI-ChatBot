@@ -14,10 +14,10 @@
         "howdy"
       ],
       "responses": [
-        "Hello! I'm ChatPy, your UoK AI assistant. How can I help you today?",
-        "Hi there! Welcome to the University of Kimberly. What would you like to know?",
+        "Hello! I'm UoK-Chat, your UoK AI assistant. How can I help you today?",
+        "Hi there! Welcome to the University of Kasi. What would you like to know?",
         "Hey! I'm here to help with information about UoK. What can I assist you with?",
-        "Good day! I'm ChatPy, ready to answer your questions about the University of Kimberly."
+        "Good day! I'm UoK-Chat, ready to answer your questions about the University of Kasi."
       ]
     },
     {
@@ -32,7 +32,7 @@
         "support"
       ],
       "responses": [
-        "I can help you with information about university applications, student fees, academic programs, and general inquiries about the University of Kimberly. What specific topic would you like to explore?",
+        "I can help you with information about university applications, student fees, academic programs, and general inquiries about the University of kasi. What specific topic would you like to explore?",
         "I'm here to assist with questions about admissions, fees, courses, campus life, and more! What would you like to know about UoK?",
         "You can ask me about applications, tuition fees, academic programs, campus facilities, and university policies. How can I help you today?"
       ]
@@ -74,7 +74,7 @@
       ],
       "responses": [
         "Tuition fees vary by program and level of study. Undergraduate programs typically range from R35,000 to R65,000 per year. We also offer various financial aid options including NSFAS funding, bursaries, and scholarships. Would you like information about a specific program?",
-        "The University of Kimberly offers competitive fees with payment plan options available. We encourage students to apply for NSFAS funding if eligible. For exact fee structures, please check our website or contact the finance office directly.",
+        "The University of Kasi offers competitive fees with payment plan options available. We encourage students to apply for NSFAS funding if eligible. For exact fee structures, please check our website or contact the finance office directly.",
         "Fees depend on your chosen field of study. We have options for financial assistance including merit-based scholarships and need-based bursaries. NSFAS applications are processed annually for qualifying students."
       ]
     },
@@ -93,7 +93,7 @@
         "qualifications"
       ],
       "responses": [
-        "The University of Kimberly offers a wide range of undergraduate and postgraduate programs across various faculties including Business, Engineering, Health Sciences, Education, and Liberal Arts. What field interests you most?",
+        "The University of Kasi offers a wide range of undergraduate and postgraduate programs across various faculties including Business, Engineering, Health Sciences, Education, and Liberal Arts. What field interests you most?",
         "We have excellent programs in fields like Computer Science, Business Administration, Nursing, Education, Engineering, and many more. Each program is designed to meet industry standards and prepare you for your career.",
         "Our academic offerings include certificates, diplomas, bachelor's degrees, and postgraduate qualifications. Popular programs include IT, Healthcare, Business Management, and Teacher Training. Would you like details about a specific program?"
       ]
@@ -116,7 +116,23 @@
         "Campus life at UoK is vibrant with numerous student organizations, sports teams, cultural activities, and academic support services. Our residence facilities provide a safe and conducive environment for learning.",
         "We provide excellent facilities including study spaces, recreational areas, dining facilities, and on-campus accommodation. There are plenty of opportunities to get involved in student activities and build lasting friendships."
       ]
-    },
+    },{
+  "tag": "bookings",
+  "patterns": [
+    "I want to make a booking",
+    "How do I book a consultation",
+    "Can I schedule an appointment",
+    "Booking",
+    "Consultation",
+    "I need counselling",
+    "I want to book IT support"
+  ],
+  "responses": [
+    "You can make a booking here: <a href='/bookings' target='_blank'>Booking & Consultations</a>",
+    "To book a consultation or service, click here: <a href='/bookings' target='_blank'>Book Now</a>"
+  ]
+}
+,
     {
       "tag": "contact",
       "patterns": [
@@ -130,8 +146,8 @@
         "visit"
       ],
       "responses": [
-        "You can contact the University of Kimberly through our main office. For specific inquiries, I recommend visiting our official website or calling our student services center. They can direct you to the right department for your needs.",
-        "Our campus is located in Kimberley, Northern Cape. For detailed contact information and office hours, please check our website or contact our admissions office directly.",
+        "You can contact the University of Kasi through our main office. For specific inquiries, I recommend visiting our official website or calling our student services center. They can direct you to the right department for your needs.",
+        "Our campus is located in Kasi, Northern Cape. For detailed contact information and office hours, please check our website or contact our admissions office directly.",
         "For immediate assistance, you can reach out through our official communication channels. Our student support team is available to help with admissions, academic, and general inquiries."
       ]
     },
@@ -161,8 +177,8 @@
         "exit"
       ],
       "responses": [
-        "Thank you for using ChatPy! Good luck with your university journey. Feel free to start a new session if you have more questions in the future.",
-        "Goodbye! I hope I was able to help you today. Best wishes for your studies at the University of Kimberly!",
+        "Thank you for using UoK-Chat! Good luck with your university journey. Feel free to start a new session if you have more questions in the future.",
+        "Goodbye! I hope I was able to help you today. Best wishes for your studies at the University of Kasi!",
         "Thanks for chatting with me! Remember, you can always reach out through our official channels for more detailed assistance. Take care!"
       ]
     },

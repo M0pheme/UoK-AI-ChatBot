@@ -1,4 +1,7 @@
 from flask import Flask, render_template, request, jsonify, session, make_response
+
+from utils import get_response, predict_class
+
 import sqlite3
 import json
 import random
@@ -15,7 +18,7 @@ app.secret_key = os.environ.get('SECRET_KEY', 'your-secret-key-change-this-in-pr
 
 
 def init_db():
-    conn = sqlite3.connect('chatpy.db')
+    conn = sqlite3.connect('UoK.db')
     c = conn.cursor()
 
     # Users table
@@ -53,12 +56,23 @@ def init_db():
         FOREIGN KEY (session_id) REFERENCES sessions (session_id)
         )''')
 
+    # Bookings table
+    c.execute('''CREATE TABLE IF NOT EXISTS bookings (
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        fname TEXT NOT NULL,
+        lname TEXT NOT NULL,
+        classification TEXT NOT NULL,
+        service TEXT NOT NULL,
+        slot TEXT NOT NULL,
+        created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+    )''')
+        
     conn.commit()
     conn.close()
 
 
 def get_db():
-    conn = sqlite3.connect('chatpy.db')
+    conn = sqlite3.connect('UoK.db')
     conn.row_factory = sqlite3.Row
     return conn
 
@@ -127,7 +141,8 @@ def save_user():
         # Insert user data
         conn = get_db()
         c = conn.cursor()
-        c.execute('''INSERT INTO users (full_name, email, international, student_category,
+        c.execute('''
+    INSERT INTO users (full_name, email, international, student_category,
                                         student_type, grade, province, school_name, student_number)
                      VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)''',
                   (data.get('full_name'), data.get('email'), data.get('international'),
@@ -196,6 +211,69 @@ def send_message():
 
     except Exception as e:
         return jsonify({'success': False, 'error': str(e)}), 500
+
+
+@app.route('/records', methods=['GET', 'POST'])
+def records():
+    messages = []
+    bookings = []
+
+    if request.method == 'POST':
+        # Optionally read filter values
+        students_filter = request.form.get('students', 'all')
+        passrate_filter = request.form.get('passrate', 'all')
+
+        conn = get_db()
+        c = conn.cursor()
+
+        # Fetch chatbot messages
+        c.execute('''
+            SELECT m.id, m.session_id, m.sender, m.content, m.timestamp, u.full_name 
+            FROM messages m
+            LEFT JOIN sessions s ON m.session_id = s.session_id
+            LEFT JOIN users u ON s.user_id = u.id
+            ORDER BY m.timestamp DESC
+        ''')
+        messages = c.fetchall()
+
+        # Fetch bookings
+        c.execute('''
+            SELECT id, fname, lname, classification, service, slot, created_at
+            FROM bookings
+            ORDER BY created_at DESC
+        ''')
+        bookings = c.fetchall()
+
+        conn.close()
+
+    return render_template('records.html', messages=messages, bookings=bookings)
+
+@app.route('/booking', methods=['GET', 'POST'])
+def booking():
+    if request.method == 'POST':
+        try:
+            fname = request.form.get('fname')
+            lname = request.form.get('lname')
+            classification = request.form.get('classification')
+            service = request.form.get('service')
+            slot = request.form.get('slot')
+
+            # Save booking
+            conn = get_db()
+            c = conn.cursor()
+            c.execute('''INSERT INTO bookings (fname, lname, classification, service, slot)
+                         VALUES (?, ?, ?, ?, ?)''',
+                      (fname, lname, classification, service, slot))
+            conn.commit()
+            conn.close()
+
+            return render_template("booking.html", success=True)
+
+        except Exception as e:
+            return render_template("booking.html", error=str(e))
+
+    return render_template("Booking.html")
+
 
 init_db()
 if __name__ == '__main__':
