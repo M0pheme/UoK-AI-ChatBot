@@ -104,7 +104,25 @@ def login():
 @app.route("/admin")
 @admin_required
 def admin_dashboard():
-    return render_template("Admin.html", user=session)
+    conn = get_db()
+    c = conn.cursor()
+
+    # Fetch bookings
+    c.execute("SELECT * FROM bookings ORDER BY created_at DESC")
+    bookings = [dict(row) for row in c.fetchall()]
+
+    # Fetch messages
+    c.execute("""
+        SELECT m.id, m.session_id, m.sender, m.content, m.timestamp, u.full_name
+        FROM messages m
+        LEFT JOIN sessions s ON m.session_id = s.session_id
+        LEFT JOIN users u ON s.user_id = u.id
+        ORDER BY m.timestamp DESC
+    """)
+    messages = [dict(row) for row in c.fetchall()]
+
+    conn.close()
+    return render_template("Admin.html", user=session, bookings=bookings, messages=messages)
 
 @app.route('/employee')
 @role_required('employee')
@@ -355,55 +373,70 @@ def view_notices():
 # -----------------------------
 # Records page (Admin)
 # -----------------------------
+# Replace your current /records route with this fixed version:
+
 @app.route('/records', methods=['GET', 'POST'])
 @admin_required
 def records():
-    messages = []
-    bookings = []
-
     conn = get_db()
     c = conn.cursor()
 
-    report_type = request.form.get('report_type') if request.method == 'POST' else 'booking'
-    service_categories = request.form.getlist('service_category')
-    sort_options = request.form.getlist('sort')
-
-    # Fetch chatbot messages
+    # Always fetch chatbot messages (no filters applied to messages currently)
     c.execute('''
-        SELECT m.id, m.session_id, m.sender, m.content, m.timestamp, u.full_name
-        FROM messages m
-        LEFT JOIN sessions s ON m.session_id = s.session_id
-        LEFT JOIN users u ON s.user_id = u.id
-        ORDER BY m.timestamp DESC
-    ''')
+              SELECT m.id, m.session_id, m.sender, m.content, m.timestamp, u.full_name
+              FROM messages m
+                       LEFT JOIN sessions s ON m.session_id = s.session_id
+                       LEFT JOIN users u ON s.user_id = u.id
+              ORDER BY m.timestamp DESC
+              ''')
     messages = [dict(row) for row in c.fetchall()]
+
+    # Initialize variables for form data
+    report_type = 'booking'  # default
+    service_categories = []
+    sort_options = []
+
+    # Get form data if POST request
+    if request.method == 'POST':
+        report_type = request.form.get('report_type', 'booking')
+        service_categories = request.form.getlist('service_category')
+        sort_options = request.form.getlist('sort')
 
     # Build bookings query with filters
     query = "SELECT id, fname, lname, classification, service, slot, created_at FROM bookings"
     filters = []
     params = []
 
+    # Apply service category filter if provided
     if service_categories:
         placeholders = ",".join("?" for _ in service_categories)
         filters.append(f"service IN ({placeholders})")
         params.extend(service_categories)
 
+    # Add WHERE clause if filters exist
     if filters:
         query += " WHERE " + " AND ".join(filters)
 
-    # Sorting
+    # Apply sorting
     if 'alphabetical' in sort_options:
         query += " ORDER BY fname ASC, lname ASC"
     elif 'date' in sort_options:
         query += " ORDER BY created_at DESC"
     else:
-        query += " ORDER BY created_at DESC"
+        query += " ORDER BY created_at DESC"  # default sort
 
     c.execute(query, params)
     bookings = [dict(row) for row in c.fetchall()]
 
     conn.close()
-    return render_template("Admin.html", messages=messages, bookings=bookings)
+
+    # Pass data to template
+    return render_template("Admin.html",
+                           messages=messages,
+                           bookings=bookings,
+                           report_type=report_type,
+                           selected_services=service_categories,
+                           selected_sorts=sort_options)
 
 # -----------------------------
 # Booking route (all roles)

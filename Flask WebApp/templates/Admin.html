@@ -168,6 +168,7 @@
       </div>
     </section>
 
+
     <!-- Reports -->
     <section class="section" id="report-section" style="display:none;">
       <div class="panel">
@@ -176,33 +177,68 @@
           <!-- Report Type -->
           <div class="filter-group">
             <strong>Report Type</strong>
-            <label><input type="radio" name="report_type" value="booking" checked> Booking Report</label>
-            <label><input type="radio" name="report_type" value="query"> Query Report</label>
+            <label>
+              <input type="radio" name="report_type" value="booking"
+                     {% if report_type == 'booking' %}checked{% endif %}> Booking Report
+            </label>
+            <label>
+              <input type="radio" name="report_type" value="query"
+                     {% if report_type == 'query' %}checked{% endif %}> Query Report
+            </label>
           </div>
 
           <!-- Service Category (checkboxes) -->
           <div class="filter-group">
             <strong>Service Category</strong>
-            <label><input type="checkbox" name="service_category" value="Student support and counselling"> Student support and counselling</label>
-            <label><input type="checkbox" name="service_category" value="Lecture"> Lecture Consultations</label>
-            <label><input type="checkbox" name="service_category" value="Library"> Library</label>
-            <label><input type="checkbox" name="service_category" value="IT Support"> IT Support</label>
-            <label><input type="checkbox" name="service_category" value="Administrative"> Administrative</label>
+            <label>
+              <input type="checkbox" name="service_category" value="Student support and counselling"
+                     {% if 'Student support and counselling' in selected_services %}checked{% endif %}>
+              Student support and counselling
+            </label>
+            <label>
+              <input type="checkbox" name="service_category" value="Lecture"
+                     {% if 'Lecture' in selected_services %}checked{% endif %}>
+              Lecture Consultations
+            </label>
+            <label>
+              <input type="checkbox" name="service_category" value="Library"
+                     {% if 'Library' in selected_services %}checked{% endif %}>
+              Library
+            </label>
+            <label>
+              <input type="checkbox" name="service_category" value="IT Support"
+                     {% if 'IT Support' in selected_services %}checked{% endif %}>
+              IT Support
+            </label>
+            <label>
+              <input type="checkbox" name="service_category" value="Administrative"
+                     {% if 'Administrative' in selected_services %}checked{% endif %}>
+              Administrative
+            </label>
           </div>
 
           <!-- Sort (checkboxes) -->
           <div class="filter-group">
             <strong>Sort</strong>
-            <label><input type="checkbox" name="sort" value="alphabetical" checked> Alphabetical order</label>
-            <label><input type="checkbox" name="sort" value="date"> Date</label>
+            <label>
+              <input type="checkbox" name="sort" value="alphabetical"
+                     {% if 'alphabetical' in selected_sorts %}checked{% else %}checked{% endif %}>
+              Alphabetical order
+            </label>
+            <label>
+              <input type="checkbox" name="sort" value="date"
+                     {% if 'date' in selected_sorts %}checked{% endif %}>
+              Date
+            </label>
           </div>
 
           <button type="submit" class="btn">Request Report</button>
           <button type="button" class="btn" onclick="downloadExcel()">Download Excel</button>
         </form>
 
-        {% if messages or bookings %}
+        <!-- Always show messages and bookings -->
         <h3 style="margin-top:20px;color:#f4d03f;">Chatbot Messages</h3>
+        {% if messages %}
         <table>
           <thead>
             <tr>
@@ -225,8 +261,12 @@
             {% endfor %}
           </tbody>
         </table>
+        {% else %}
+        <p>No messages found.</p>
+        {% endif %}
 
         <h3 style="margin-top:20px;color:#f4d03f;">Bookings</h3>
+        {% if bookings %}
         <table>
           <thead>
             <tr>
@@ -236,17 +276,23 @@
           <tbody>
             {% for booking in bookings %}
             <tr>
-              <td>{{ booking.id }}</td><td>{{ booking.fname }}</td><td>{{ booking.lname }}</td>
-              <td>{{ booking.classification }}</td><td>{{ booking.service }}</td><td>{{ booking.slot }}</td><td>{{ booking.created_at }}</td>
+              <td>{{ booking.id }}</td>
+              <td>{{ booking.fname }}</td>
+              <td>{{ booking.lname }}</td>
+              <td>{{ booking.classification }}</td>
+              <td>{{ booking.service }}</td>
+              <td>{{ booking.slot }}</td>
+              <td>{{ booking.created_at }}</td>
             </tr>
             {% endfor %}
           </tbody>
         </table>
+        {% else %}
+        <p>No bookings found{% if selected_services %} matching the selected filters{% endif %}.</p>
         {% endif %}
 
       </div>
     </section>
-
     <footer><p>&copy; 2025 University of Kasi. All Rights Reserved.</p></footer>
   </div>
 
