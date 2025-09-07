@@ -77,7 +77,6 @@
     .filter-group { margin-bottom: 14px; text-align: left; }
     .filter-group strong { display: block; margin-bottom: 4px; }
     .filter-group label { margin-left: 8px; display: block; }
-
   </style>
 </head>
 <body>
@@ -90,33 +89,27 @@
     <button class="nav-btn" onclick="showSection('profile')"><i class="fas fa-user"></i> <span class="btn-text">Profile</span></button>
     <button class="nav-btn" onclick="showSection('bookings')"><i class="fas fa-calendar-check"></i> <span class="btn-text">Bookings</span></button>
     <button class="nav-btn" onclick="showSection('notices')"><i class="fas fa-bell"></i> <span class="btn-text">Notices</span></button>
+    <button class="nav-btn" onclick="showSection('report')"><i class="fas fa-chart-bar"></i> <span class="btn-text">Reports</span></button>
   </div>
 
   <!-- Content -->
   <div class="content">
     <!-- Home -->
     <section class="hero" id="home-section">
-      <h2>Welcome, {{ user.full_name }}</h2>
-      <p>Email: {{ user.email }} | Faculty: {{ user.faculty }}</p>
+      <h2>Welcome, {{ user.fname }} {{ user.lname }}</h2>
+      <p>Email: {{ user.email }}</p>
     </section>
 
     <!-- Profile -->
     <section class="section" id="profile-section" style="display:none;">
       <div class="form-container">
         <h2>Update Profile</h2>
-        <form id="profileForm">
-          <input type="text" id="profileFname" placeholder="First Name" value="{{ user.fname }}" required>
-          <input type="text" id="profileLname" placeholder="Last Name" value="{{ user.lname }}" required>
-          <input type="email" id="profileEmail" placeholder="Email" value="{{ user.email }}" required>
-          <select id="profileFaculty" required>
-            <option value="">Select Faculty</option>
-            <option value="Engineering" {% if user.faculty=='Engineering' %}selected{% endif %}>Engineering</option>
-            <option value="Economics & Management Sciences (EMS)" {% if user.faculty=='Economics & Management Sciences (EMS)' %}selected{% endif %}>Economics & Management Sciences (EMS)</option>
-            <option value="Health Sciences" {% if user.faculty=='Health Sciences' %}selected{% endif %}>Health Sciences</option>
-            <option value="Law" {% if user.faculty=='Law' %}selected{% endif %}>Law</option>
-            <option value="Humanities & Education" {% if user.faculty=='Humanities & Education' %}selected{% endif %}>Humanities & Education</option>
-            <option value="Natural & Physical Sciences" {% if user.faculty=='Natural & Physical Sciences' %}selected{% endif %}>Natural & Physical Sciences</option>
-          </select>
+        <form method="POST" action="{{ url_for('update_profile') }}">
+          <input type="text" name="fname" placeholder="First Name" value="{{ user.fname }}" required>
+          <input type="text" name="lname" placeholder="Last Name" value="{{ user.lname }}" required>
+          <input type="email" name="email" placeholder="Email" value="{{ user.email }}" required>
+          <input type="password" name="password" placeholder="New Password">
+          <input type="password" name="confirm_password" placeholder="Confirm Password">
           <button type="submit">Update Profile</button>
         </form>
       </div>
@@ -126,24 +119,20 @@
     <section class="section" id="bookings-section" style="display:none;">
       <div class="form-container">
         <h2>Your Bookings</h2>
-        <a href="booking.html" class="btn">Create New Booking</a>
+        <a href="{{ url_for('booking') }}" class="btn">Create New Booking</a>
         <table>
           <thead>
-            <tr><th>ID</th><th>First</th><th>Last</th><th>Faculty</th><th>Service</th><th>Slot</th><th>Actions</th></tr>
+            <tr><th>ID</th><th>First</th><th>Last</th><th>Classification</th><th>Service</th><th>Slot</th></tr>
           </thead>
-          <tbody id="bookingTable">
+          <tbody>
             {% for booking in bookings %}
             <tr>
               <td>{{ booking.id }}</td>
               <td>{{ booking.fname }}</td>
               <td>{{ booking.lname }}</td>
-              <td>{{ booking.faculty }}</td>
+              <td>{{ booking.classification }}</td>
               <td>{{ booking.service }}</td>
               <td>{{ booking.slot }}</td>
-              <td>
-                <a href="booking.html?id={{ booking.id }}" class="btn">Update</a>
-                <button onclick="deleteBooking({{ booking.id }})" class="btn">Delete</button>
-              </td>
             </tr>
             {% endfor %}
           </tbody>
@@ -154,23 +143,15 @@
     <!-- Notices -->
     <section class="section" id="notices-section" style="display:none;">
       <div class="form-container">
-        <h2>Your Notices</h2>
-        <form id="noticeForm">
-          <input type="hidden" id="noticeId">
-          <textarea id="noticeMessage" placeholder="Enter your notice" required></textarea>
-          <button type="submit">Save Notice</button>
-        </form>
+        <h2>Notices</h2>
         <table>
-          <thead><tr><th>ID</th><th>Message</th><th>Actions</th></tr></thead>
-          <tbody id="noticeTable">
+          <thead><tr><th>Title</th><th>Content</th><th>Created At</th></tr></thead>
+          <tbody>
             {% for notice in notices %}
             <tr>
-              <td>{{ notice.id }}</td>
-              <td>{{ notice.message }}</td>
-              <td>
-                <button onclick="editNotice({{ notice.id }}, '{{ notice.message }}')" class="btn">Update</button>
-                <button onclick="deleteNotice({{ notice.id }})" class="btn">Delete</button>
-              </td>
+              <td>{{ notice.title }}</td>
+              <td>{{ notice.content }}</td>
+              <td>{{ notice.created_at }}</td>
             </tr>
             {% endfor %}
           </tbody>
@@ -181,14 +162,12 @@
     <!-- Reports -->
     <section class="section" id="report-section" style="display:none;">
       <div class="panel">
-        <h2>Student Analytics Report</h2>
+        <h2>Reports</h2>
         <form method="POST" action="{{ url_for('records') }}">
           <div class="filter-group">
             <strong>Report Type</strong>
             <label><input type="radio" name="report_type" value="booking" checked> Booking Report</label>
             <label><input type="radio" name="report_type" value="query"> Query Report</label>
-            <label><input type="radio" name="report_type" value="employees"> Employees</label>
-            <label><input type="radio" name="report_type" value="students"> Students</label>
           </div>
           <div class="filter-group">
             <strong>Service Category</strong>
@@ -229,49 +208,6 @@
     }
 
     document.addEventListener("DOMContentLoaded", () => { showSection('home'); });
-
-    // Profile update demo
-    document.getElementById("profileForm").addEventListener("submit", e=>{
-      e.preventDefault();
-      alert("Profile updated successfully!");
-    });
-
-    // Bookings delete
-    function deleteBooking(id){
-      if(confirm("Delete this booking?")){
-        const rows = document.querySelectorAll("#bookingTable tr");
-        rows.forEach(r => { if(r.children[0].textContent == id) r.remove(); });
-      }
-    }
-
-    // Notices CRUD demo
-    let noticeCounter = {{ notices|length + 1 }};
-    const noticeForm = document.getElementById("noticeForm");
-    noticeForm.addEventListener("submit", e=>{
-      e.preventDefault();
-      const id = document.getElementById("noticeId").value || noticeCounter++;
-      const msg = document.getElementById("noticeMessage").value;
-      const tbody = document.getElementById("noticeTable");
-      const row = document.createElement("tr");
-      row.innerHTML = `<td>${id}</td><td>${msg}</td>
-        <td>
-          <button onclick="editNotice(${id}, '${msg}')" class="btn">Update</button>
-          <button onclick="deleteNotice(${id})" class="btn">Delete</button>
-        </td>`;
-      tbody.appendChild(row);
-      noticeForm.reset();
-      document.getElementById("noticeId").value = '';
-    });
-    function editNotice(id,msg){
-      document.getElementById("noticeId").value = id;
-      document.getElementById("noticeMessage").value = msg;
-    }
-    function deleteNotice(id){
-      if(confirm("Delete this notice?")){
-        const rows = document.querySelectorAll("#noticeTable tr");
-        rows.forEach(r => { if(r.children[0].textContent == id) r.remove(); });
-      }
-    }
   </script>
 </body>
 </html>
