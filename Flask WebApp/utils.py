@@ -35,7 +35,7 @@ def get_db():
 def role_required(*roles):
     """
     Restrict access to users with one of the given roles.
-    Example: @role_required("admin"), or @role_required("faculty", "admin")
+    Example: @role_required("admin"), or @role_required("employee","admin")
     """
     def wrapper(f):
         @wraps(f)
@@ -50,17 +50,27 @@ def role_required(*roles):
         return decorated_function
     return wrapper
 
-
 def login_required(f):
+    """Simple login-required decorator (any logged-in user)."""
     @wraps(f)
     def decorated_function(*args, **kwargs):
         if 'user_id' not in session:
-            flash("Please login to access this page.")
+            flash("Please login to access this page.", "warning")
             return redirect(url_for('login'))
         return f(*args, **kwargs)
     return decorated_function
 
-
+# ---------------------------
+# Admin Login Decorator
+# ---------------------------
+def admin_required(f):
+    @wraps(f)
+    def decorated_function(*args, **kwargs):
+        if 'user_role' not in session or session['user_role'] != 'admin':
+            flash("Admin access required", "danger")
+            return redirect(url_for('index'))
+        return f(*args, **kwargs)
+    return decorated_function
 
 # -------------------------------
 # Database initialization
@@ -68,16 +78,17 @@ def login_required(f):
 def init_db():
     conn = get_db()
     c = conn.cursor()
-    # login table (roles: admin, staff, student)
+
+    # Login table (legacy / optional)
     c.execute('''CREATE TABLE IF NOT EXISTS login (
         id INTEGER PRIMARY KEY AUTOINCREMENT,
         username TEXT UNIQUE NOT NULL,
         password TEXT NOT NULL,
-        role TEXT NOT NULL CHECK(role IN ('admin','staff','student')),
+        role TEXT NOT NULL CHECK(role IN ('admin','employee','student')),
         job_title TEXT
     )''')
 
-    # Users table
+    # Users table (for chatbot sessions linking)
     c.execute('''CREATE TABLE IF NOT EXISTS users (
         id INTEGER PRIMARY KEY AUTOINCREMENT,
         full_name TEXT NOT NULL,
@@ -98,10 +109,9 @@ def init_db():
         session_id TEXT NOT NULL,
         sender TEXT NOT NULL,
         content TEXT NOT NULL,
-        timestamp TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-        FOREIGN KEY (session_id) REFERENCES sessions (session_id)
-        )''')
-            
+        timestamp TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+    )''')
+
     # Sessions table
     c.execute('''CREATE TABLE IF NOT EXISTS sessions (
         id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -112,6 +122,7 @@ def init_db():
     )''')
 
     # Bookings table
+    # Note: no student_id column here — bookings are recorded by names
     c.execute('''CREATE TABLE IF NOT EXISTS bookings (
         id INTEGER PRIMARY KEY AUTOINCREMENT,
         fname TEXT NOT NULL,
@@ -121,37 +132,37 @@ def init_db():
         slot TEXT NOT NULL,
         created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
     )''')
-    # Notices table (CRUD by admin/staff)
-    c.execute('''
-        CREATE TABLE IF NOT EXISTS notices (
+
+    # Notices table
+    c.execute('''CREATE TABLE IF NOT EXISTS notices (
         id INTEGER PRIMARY KEY AUTOINCREMENT,
         title TEXT NOT NULL,
         content TEXT NOT NULL,
         created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
     )''')
 
-    # Create admin table
-    c.execute("""CREATE TABLE IF NOT EXISTS admin (
+    # Admin table
+    c.execute('''CREATE TABLE IF NOT EXISTS admin (
         id INTEGER PRIMARY KEY AUTOINCREMENT,
         fname TEXT NOT NULL,
         lname TEXT NOT NULL,
         email TEXT UNIQUE NOT NULL,
         password TEXT NOT NULL
-    )""")
+    )''')
 
-    # staff table
-    c.execute('''CREATE TABLE IF NOT EXISTS staff (
+    # Employees table (replacing staff)
+    c.execute('''CREATE TABLE IF NOT EXISTS employees (
         id INTEGER PRIMARY KEY AUTOINCREMENT,
         fname TEXT NOT NULL,
         lname TEXT NOT NULL,
         email TEXT UNIQUE NOT NULL,
         password TEXT NOT NULL,
-        role TEXT NOT NULL CHECK(role='student'),
+        role TEXT NOT NULL CHECK(role='employee'),
         created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
     )''')
 
-    # Student table
-    c.execute('''CREATE TABLE IF NOT EXISTS STUDENTS(
+    # Students table
+    c.execute('''CREATE TABLE IF NOT EXISTS students(
          id INTEGER PRIMARY KEY AUTOINCREMENT,
          fname TEXT NOT NULL,
          lname TEXT NOT NULL,
@@ -161,25 +172,16 @@ def init_db():
          created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
     )''')
 
-    #==============================
-    # Insert Admin for test run
-    #==============================
-    # Insert admin account (hashed password)
+    # Insert default admin (if not exists)
     admin_fname = "Admin"
     admin_lname = "User"
     admin_email = "admin-user@UoK.ac.za"
     admin_password = "admin@user"
-
     hashed_password = generate_password_hash(admin_password)
 
-    c.execute("""
-        INSERT OR IGNORE INTO admin (fname, lname, email, password)
-        VALUES (?, ?, ?, ?)
-        """, (admin_fname, admin_lname, admin_email, hashed_password))
-
-    print("Admin table ready with default credentials!") # To check if admin account is successfully added
-
-
+    c.execute("""INSERT OR IGNORE INTO admin (fname, lname, email, password)
+                 VALUES (?, ?, ?, ?)""",
+              (admin_fname, admin_lname, admin_email, hashed_password))
 
     conn.commit()
     conn.close()
@@ -187,37 +189,37 @@ def init_db():
 #---------------------------------------------
 # Auto-generate email and password
 #---------------------------------------------
-def create_staff(fname, lname):
+def create_employee(fname, lname):
     conn = get_db()
     c = conn.cursor()
     role = 'employee'
 
-    # Insert staff to get userID
-    c.execute("INSERT INTO staff (fname, lname, email, password, role) VALUES (?, ?, ?, ?, ?)",
+    # Insert employee to get id
+    c.execute("INSERT INTO employees (fname, lname, email, password, role) VALUES (?, ?, ?, ?, ?)",
               (fname, lname, '', '', role))
     user_id = c.lastrowid
 
-    # Auto-generate email & password
+    # Auto-generate email & password (plain to share with admin)
     email = f"{user_id}-{lname}@UoK.ac.za"
     password = f"{user_id}@{lname}"
 
     # Hash the password
     hashed_password = generate_password_hash(password)
 
-    # Update record
-    c.execute("UPDATE staff SET email = ?, password = ? WHERE id = ?",
+    # Update record with generated credentials
+    c.execute("UPDATE employees SET email = ?, password = ? WHERE id = ?",
               (email, hashed_password, user_id))
     conn.commit()
     conn.close()
 
-    return {'id': user_id, 'email': email, 'password': password}  # return plain password for admin to share
+    return {'id': user_id, 'email': email, 'password': password}
 
 def create_student(fname, lname):
     conn = get_db()
     c = conn.cursor()
     role = 'student'
 
-    # Insert student to get userID
+    # Insert student to get id
     c.execute("INSERT INTO students (fname, lname, email, password, role) VALUES (?, ?, ?, ?, ?)",
               (fname, lname, '', '', role))
     user_id = c.lastrowid
@@ -225,8 +227,6 @@ def create_student(fname, lname):
     # Auto-generate email & password
     email = f"{user_id}-{lname}@UoK.ac.za"
     password = f"{user_id}@{lname}"
-
-    # Hash the password
     hashed_password = generate_password_hash(password)
 
     # Update record
@@ -237,11 +237,9 @@ def create_student(fname, lname):
 
     return {'id': user_id, 'email': email, 'password': password}
 
-
 #=============================================
 # ChatBot AI Handling
 #=============================================
-
 def load_intents():
     try:
         with open('model/intents.json', 'r') as file:
@@ -255,10 +253,11 @@ def bot_reply(text):
 
     for intent in intents.get('intents', []):
         for pattern in intent.get('patterns', []):
+            # use regex search for flexible matching
             if re.search(pattern.lower(), text_lower):
                 return random.choice(intent.get('responses', ['I understand.']))
 
-    # Fallback
+    # Fallback responses
     fallback_responses = [
         "I'm not sure about that. Can you try asking about applications, fees, or general university information?",
         "I didn't quite understand. Would you like to know about university applications or student fees?",
@@ -266,19 +265,14 @@ def bot_reply(text):
     ]
     return random.choice(fallback_responses)
 
-
 def clean_up_sentence(sentence):
     lemmatizer = WordNetLemmatizer()
-
     sentence_words = nltk.word_tokenize(sentence)
     sentence_words = [lemmatizer.lemmatize(word) for word in sentence_words]
-
     return sentence_words
-
 
 def bag_of_words(sentence):
     words = pickle.load(open('model/words.pkl', 'rb'))
-
     sentence_words = clean_up_sentence(sentence)
     bag = [0] * len(words)
     for w in sentence_words:
@@ -286,7 +280,6 @@ def bag_of_words(sentence):
             if word == w:
                 bag[i] = 1
     return np.array(bag)
-
 
 def predict_class(sentence):
     classes = pickle.load(open('model/classes.pkl', 'rb'))
@@ -300,22 +293,17 @@ def predict_class(sentence):
     results.sort(key=lambda x: x[1], reverse=True)
 
     return_list = []
-
     for r in results:
         return_list.append({'intent': classes[r[0]], 'probability': str(r[1])})
 
     return return_list
 
-
 def get_response(intents_list):
     intents_json = json.load(open('model/intents.json'))
-
     tag = intents_list[0]['intent']
     list_of_intents = intents_json['intents']
-
     for i in list_of_intents:
         if i['tag'] == tag:
             result = random.choice(i['responses'])
             break
-
     return result
