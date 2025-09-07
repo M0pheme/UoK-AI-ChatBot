@@ -76,22 +76,31 @@
 <body>
 
   <div class="container">
-    <h2>Returning Student Login</h2>
-    <form action="{{ url_for('login') }}" method="POST">
-      <label for="username">Student ID:</label>
-      <input type="text" name="username" required>
+  <h2>Enter Login Details</h2>
 
-      <label for="password">Password:</label>
-      <input type="password" name="password" required>
+  {% with messages = get_flashed_messages() %}
+    {% if messages %}
+      <div class="flash-messages">
+        {% for message in messages %}
+          <p style="color: #f1c40f; text-align:center;">{{ message }}</p>
+        {% endfor %}
+      </div>
+    {% endif %}
+  {% endwith %}
 
-      <button type="submit" class="btn">Login</button>
-    </form>
-    <a href="{{ url_for('index') }}" class="back">⬅ Back</a>
+  <form action="{{ url_for('login') }}" method="POST">
+    <label for="username">Username:</label>
+    <input type="text" name="username" required autofocus>
 
-  </div>
+    <label for="password">Password:</label>
+    <input type="password" name="password" required>
 
-  <!-- Chatbot Include -->
-  {% include 'chatbot.html' %}
+    <button type="submit" class="btn">Login</button>
+  </form>
+
+  <a href="{{ url_for('index') }}" class="back">⬅ Back</a>
+</div>
+
 
 </body>
 </html>

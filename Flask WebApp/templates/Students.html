@@ -1,0 +1,254 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>University of Kasi Portal - Student Dashboard</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+  <style>
+    body {
+      margin: 0;
+      font-family: Arial, sans-serif;
+      background: url('https://images.unsplash.com/photo-1524995997946-a1c2e315a42f?ixlib=rb-4.0.3&auto=format&fit=crop&w=1400&q=80') no-repeat center center/cover;
+      color: #fff;
+      display: flex;
+      height: 100vh;
+    }
+    .sidebar {
+      width: 260px;
+      background: rgba(0,0,0,0.8);
+      padding: 20px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      transition: width 0.3s ease;
+    }
+    .sidebar.collapsed { width: 80px; }
+    .sidebar .toggle-btn { align-self: flex-end; cursor: pointer; font-size: 20px; margin-bottom: 20px; }
+    .sidebar .logo { text-align: center; margin-bottom: 30px; }
+    .sidebar .logo i { font-size: 50px; margin-bottom: 10px; }
+    .sidebar h2 { margin: 0; font-size: 22px; white-space: nowrap; }
+    .nav-btn {
+      width: 100%;
+      background: #f4d03f;
+      color: #000;
+      border: none;
+      padding: 12px;
+      margin: 10px 0;
+      font-size: 16px;
+      border-radius: 6px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+      transition: background 0.3s;
+    }
+    .nav-btn:hover { background: #d4ac0d; }
+    .content { flex: 1; padding: 20px; overflow-y: auto; }
+    .hero { text-align: center; padding: 80px 20px; background: rgba(0,0,0,0.6); border-radius: 12px; margin: 20px 0; }
+    .hero h2 { font-size: 32px; margin-bottom: 15px; }
+    .btn { background: #f4d03f; color: #000 !important; padding: 10px 18px; border-radius: 6px; font-weight: bold; text-decoration: none; cursor: pointer; transition: background 0.3s; }
+    .btn:hover { background: #d4ac0d; }
+    .section { background: rgba(0,0,0,0.6); padding: 40px 20px; margin: 20px 0; border-radius: 10px; }
+    .form-container { max-width: 600px; margin: 20px auto; background: rgba(255,255,255,0.1); padding: 30px; border-radius: 12px; text-align: left; }
+    .form-container h2 { text-align: center; margin-bottom: 20px; color: #f4d03f; }
+    .form-container input, .form-container select, .form-container textarea { width: 100%; padding: 10px; margin: 10px 0; border-radius: 6px; border: none; font-size: 14px; }
+    .form-container button { width: 100%; padding: 12px; margin-top: 10px; background: #f4d03f; border: none; border-radius: 6px; font-weight: bold; cursor: pointer; }
+    .form-container button:hover { background: #d4ac0d; }
+    table { width: 100%; border-collapse: collapse; color: #fff; margin-top: 20px; }
+    th, td { padding: 12px; border-bottom: 1px solid #f4d03f; text-align: left; }
+    th { background: rgba(255,255,255,0.1); }
+    tr:hover { background: rgba(255,255,255,0.05); }
+    footer { text-align: center; padding: 15px; background: rgba(0,0,0,0.7); border-radius: 10px; margin-top: 20px; }
+  </style>
+</head>
+<body>
+
+  <!-- Sidebar -->
+  <div class="sidebar" id="sidebar">
+    <div class="toggle-btn" onclick="toggleSidebar()"><i class="fas fa-bars"></i></div>
+    <div class="logo"><i class="fas fa-university"></i><h2 id="logo-text">UOK Portal</h2></div>
+    <button class="nav-btn" onclick="showSection('home')"><i class="fas fa-home"></i> <span class="btn-text">Home</span></button>
+    <button class="nav-btn" onclick="showSection('profile')"><i class="fas fa-user"></i> <span class="btn-text">Profile</span></button>
+    <button class="nav-btn" onclick="showSection('bookings')"><i class="fas fa-calendar-check"></i> <span class="btn-text">Bookings</span></button>
+    <button class="nav-btn" onclick="showSection('notices')"><i class="fas fa-bell"></i> <span class="btn-text">Notices</span></button>
+  </div>
+
+  <!-- Content -->
+  <div class="content">
+    <!-- Home -->
+    <section class="hero" id="home-section">
+      <h2>Welcome, {{ user.full_name }}</h2>
+      <p>Email: {{ user.email }} | Faculty: {{ user.faculty }}</p>
+    </section>
+
+    <!-- Profile -->
+    <section class="section" id="profile-section" style="display:none;">
+      <div class="form-container">
+        <h2>Update Profile</h2>
+        <form id="profileForm" method="POST" action="{{ url_for('update_profile') }}">
+          <input type="text" name="fname" placeholder="First Name" value="{{ user.fname }}" required>
+          <input type="text" name="lname" placeholder="Last Name" value="{{ user.lname }}" required>
+          <input type="email" name="email" placeholder="Email" value="{{ user.email }}" required>
+          <select name="faculty" required>
+            <option value="">Select Faculty</option>
+            <option value="Engineering" {% if user.faculty=='Engineering' %}selected{% endif %}>Engineering</option>
+            <option value="Economics & Management Sciences (EMS)" {% if user.faculty=='Economics & Management Sciences (EMS)' %}selected{% endif %}>EMS</option>
+            <option value="Health Sciences" {% if user.faculty=='Health Sciences' %}selected{% endif %}>Health Sciences</option>
+            <option value="Law" {% if user.faculty=='Law' %}selected{% endif %}>Law</option>
+            <option value="Humanities & Education" {% if user.faculty=='Humanities & Education' %}selected{% endif %}>Humanities & Education</option>
+            <option value="Natural & Physical Sciences" {% if user.faculty=='Natural & Physical Sciences' %}selected{% endif %}>Natural & Physical Sciences</option>
+          </select>
+          <input type="password" name="password" placeholder="New Password">
+          <input type="password" name="confirm_password" placeholder="Confirm New Password">
+          <button type="submit">Update Profile</button>
+        </form>
+      </div>
+    </section>
+
+    <!-- Bookings -->
+    <section class="section" id="bookings-section" style="display:none;">
+      <div class="form-container">
+        <h2>Manage Your Bookings</h2>
+        <form id="bookingForm">
+          <input type="hidden" id="bookingId">
+          <input type="text" id="bookingFname" placeholder="First Name" value="{{ user.fname }}" required>
+          <input type="text" id="bookingLname" placeholder="Last Name" value="{{ user.lname }}" required>
+          <select id="bookingFaculty" required>
+            <option value="">Select Faculty</option>
+            <option value="Engineering" {% if user.faculty=='Engineering' %}selected{% endif %}>Engineering</option>
+            <option value="Economics & Management Sciences (EMS)" {% if user.faculty=='Economics & Management Sciences (EMS)' %}selected{% endif %}>EMS</option>
+            <option value="Health Sciences" {% if user.faculty=='Health Sciences' %}selected{% endif %}>Health Sciences</option>
+            <option value="Law" {% if user.faculty=='Law' %}selected{% endif %}>Law</option>
+            <option value="Humanities & Education" {% if user.faculty=='Humanities & Education' %}selected{% endif %}>Humanities & Education</option>
+            <option value="Natural & Physical Sciences" {% if user.faculty=='Natural & Physical Sciences' %}selected{% endif %}>Natural & Physical Sciences</option>
+          </select>
+          <select id="bookingService" required>
+            <option value="">Select Service</option>
+            <option value="counselling">Student support and counselling</option>
+            <option value="consultations">Lecture Consultations</option>
+            <option value="library">Library</option>
+            <option value="it">IT Support</option>
+            <option value="administrative">Administrative</option>
+          </select>
+          <label for="bookingSlot">Select Date & Time</label>
+          <input type="datetime-local" id="bookingSlot" required>
+          <button type="submit" class="btn">Save Booking</button>
+        </form>
+
+        <table>
+          <thead>
+            <tr><th>ID</th><th>First</th><th>Last</th><th>Faculty</th><th>Service</th><th>Slot</th><th>Actions</th></tr>
+          </thead>
+          <tbody id="bookingTable">
+            {% for booking in bookings %}
+            <tr>
+              <td>{{ booking.id }}</td>
+              <td>{{ booking.fname }}</td>
+              <td>{{ booking.lname }}</td>
+              <td>{{ booking.faculty }}</td>
+              <td>{{ booking.service }}</td>
+              <td>{{ booking.slot }}</td>
+              <td>
+                <button onclick="editBooking({{ booking.id }}, '{{ booking.fname }}', '{{ booking.lname }}', '{{ booking.faculty }}', '{{ booking.service }}', '{{ booking.slot }}')" class="btn">Update</button>
+                <button onclick="deleteBooking({{ booking.id }})" class="btn">Delete</button>
+              </td>
+            </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <!-- Notices -->
+    <section class="section" id="notices-section" style="display:none;">
+      <div class="form-container">
+        <h2>University Notices</h2>
+        {% if notices %}
+          {% for notice in notices %}
+            <div class="notice" style="border-bottom: 1px solid #f4d03f; padding: 10px 0;">
+              <div class="notice-title" style="font-weight:bold; font-size:16px; color:#f4d03f;">{{ notice.title }}</div>
+              <div class="notice-date" style="font-size:12px; color:#fff;">{{ notice.date_posted }}</div>
+              <div class="notice-content" style="margin-top:5px;">{{ notice.content }}</div>
+            </div>
+          {% endfor %}
+        {% else %}
+          <p>No notices available at the moment.</p>
+        {% endif %}
+      </div>
+    </section>
+
+
+    <footer>&copy; 2025 University of Kasi. All Rights Reserved.</footer>
+  </div>
+
+  <script>
+    function toggleSidebar() {
+      const sidebar = document.getElementById("sidebar");
+      sidebar.classList.toggle("collapsed");
+      const text = document.querySelectorAll(".btn-text, #logo-text");
+      text.forEach(el => el.style.display = sidebar.classList.contains("collapsed") ? "none" : "inline");
+    }
+    function showSection(section) {
+      const allSections = document.querySelectorAll('.hero, .section');
+      allSections.forEach(s => s.style.display = 'none');
+      document.getElementById(section + '-section').style.display = 'block';
+    }
+    document.addEventListener("DOMContentLoaded", () => { showSection('home'); });
+
+    // Bookings CRUD
+    let bookingCounter = {{ bookings|length + 1 }};
+    const bookingForm = document.getElementById("bookingForm");
+    bookingForm.addEventListener("submit", e => {
+      e.preventDefault();
+      const id = document.getElementById("bookingId").value || bookingCounter++;
+      const fname = document.getElementById("bookingFname").value;
+      const lname = document.getElementById("bookingLname").value;
+      const faculty = document.getElementById("bookingFaculty").value;
+      const service = document.getElementById("bookingService").value;
+      const slot = document.getElementById("bookingSlot").value;
+      const tbody = document.getElementById("bookingTable");
+
+      let row = Array.from(tbody.rows).find(r => r.cells[0].textContent == id);
+      if(row){
+        row.cells[1].textContent = fname;
+        row.cells[2].textContent = lname;
+        row.cells[3].textContent = faculty;
+        row.cells[4].textContent = service;
+        row.cells[5].textContent = slot;
+      } else {
+        const newRow = document.createElement("tr");
+        newRow.innerHTML = `
+          <td>${id}</td>
+          <td>${fname}</td>
+          <td>${lname}</td>
+          <td>${faculty}</td>
+          <td>${service}</td>
+          <td>${slot}</td>
+          <td>
+            <button onclick="editBooking(${id}, '${fname}', '${lname}', '${faculty}', '${service}', '${slot}')" class="btn">Update</button>
+            <button onclick="deleteBooking(${id})" class="btn">Delete</button>
+          </td>`;
+        tbody.appendChild(newRow);
+      }
+      bookingForm.reset();
+      document.getElementById("bookingId").value = '';
+    });
+
+    function editBooking(id,fname,lname,faculty,service,slot){
+      document.getElementById("bookingId").value = id;
+      document.getElementById("bookingFname").value = fname;
+      document.getElementById("bookingLname").value = lname;
+      document.getElementById("bookingFaculty").value = faculty;
+      document.getElementById("bookingService").value = service;
+      document.getElementById("bookingSlot").value = slot;
+    }
+    function deleteBooking(id){
+      if(confirm("Delete this booking?")){
+        const rows = document.querySelectorAll("#bookingTable tr");
+        rows.forEach(r => { if(r.children[0].textContent == id) r.remove(); });
+      }
+    }
+  </script>
+</body>
+</html>

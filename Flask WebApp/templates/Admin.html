@@ -95,8 +95,8 @@
   <div class="content">
     <!-- Home -->
     <section class="hero" id="home-section">
-      <h2>Welcome, {{ user.full_name }}</h2>
-      <p>Your email: {{ user.email }} | Faculty: {{ user.faculty }}</p>
+      <h2>Welcome, Admin</h2>
+      <p>Hope you are having a great day!</p>
     </section>
 
     <!-- Staff CRUD -->
@@ -178,8 +178,6 @@
             <strong>Report Type</strong>
             <label><input type="radio" name="report_type" value="booking" checked> Booking Report</label>
             <label><input type="radio" name="report_type" value="query"> Query Report</label>
-            <label><input type="radio" name="report_type" value="employees"> Employees</label>
-            <label><input type="radio" name="report_type" value="students"> Students</label>
           </div>
 
           <!-- Service Category (checkboxes) -->
@@ -231,62 +229,174 @@
   </div>
 
   <script>
-    function toggleSidebar() {
-      const sidebar = document.getElementById("sidebar");
-      sidebar.classList.toggle("collapsed");
-      const text = document.querySelectorAll(".btn-text, #logo-text");
-      text.forEach(el => el.style.display = sidebar.classList.contains("collapsed") ? "none" : "inline");
-    }
-    function showSection(section) {
-      const allSections = document.querySelectorAll('.hero, .section');
-      allSections.forEach(s => s.style.display = 'none');
-      if(section === 'home') { document.getElementById('home-section').style.display = 'block'; }
-      else { document.getElementById(section+'-section').style.display = 'block'; }
-    }
+        // ------------------------------
+        // Sidebar toggle
+        // ------------------------------
+        function toggleSidebar() {
+          const sidebar = document.getElementById("sidebar");
+          sidebar.classList.toggle("collapsed");
+          const text = document.querySelectorAll(".btn-text, #logo-text");
+          text.forEach(el => el.style.display = sidebar.classList.contains("collapsed") ? "none" : "inline");
+        }
 
-    // CRUD Logic (in-memory for demo)
-    let empId=1, stuId=1;
-    document.getElementById("employeeForm").addEventListener("submit", e=>{
-      e.preventDefault();
-      const id=document.getElementById("empId").value || empId++;
-      const fname=document.getElementById("empFname").value;
-      const lname=document.getElementById("empLname").value;
-      const dept=document.getElementById("empDept").value;
-      addRow("employeeTable",id,fname,lname,dept,"emp");
-      e.target.reset();
-    });
-    document.getElementById("studentForm").addEventListener("submit", e=>{
-      e.preventDefault();
-      const id=document.getElementById("stuId").value || stuId++;
-      const fname=document.getElementById("stuFname").value;
-      const lname=document.getElementById("stuLname").value;
-      const dept=document.getElementById("stuDept").value;
-      addRow("studentTable",id,fname,lname,dept,"stu");
-      e.target.reset();
-    });
-    function addRow(tableId,id,fname,lname,dept,type){
-      const tbody=document.getElementById(tableId);
-      const row=document.createElement("tr");
-      row.innerHTML=`<td>${id}</td><td>${fname}</td><td>${lname}</td><td>${dept}</td>
-      <td><button onclick="editRow(this,'${type}')">Edit</button>
-      <button onclick="this.closest('tr').remove()">Delete</button></td>`;
-      tbody.appendChild(row);
-    }
-    function editRow(btn,type){
-      const row=btn.closest("tr").children;
-      if(type==="emp"){
-        document.getElementById("empId").value=row[0].textContent;
-        document.getElementById("empFname").value=row[1].textContent;
-        document.getElementById("empLname").value=row[2].textContent;
-        document.getElementById("empDept").value=row[3].textContent;
-      } else {
-        document.getElementById("stuId").value=row[0].textContent;
-        document.getElementById("stuFname").value=row[1].textContent;
-        document.getElementById("stuLname").value=row[2].textContent;
-        document.getElementById("stuDept").value=row[3].textContent;
+        // ------------------------------
+        // Section display
+        // ------------------------------
+        function showSection(section) {
+          const allSections = document.querySelectorAll('.hero, .section');
+          allSections.forEach(s => s.style.display = 'none');
+          if (section === 'home') {
+            document.getElementById('home-section').style.display = 'block';
+          } else {
+            document.getElementById(section + '-section').style.display = 'block';
+          }
+        }
+
+        // ------------------------------
+        // Load staff/students from DB
+        // ------------------------------
+        async function loadEmployees() {
+          const res = await fetch("/api/staff");
+          const staff = await res.json();
+          const tbody = document.getElementById("employeeTable");
+          tbody.innerHTML = "";
+          staff.forEach(s => {
+            addRow("employeeTable", s.id, s.fname, s.lname, s.role, "emp");
+          });
+        }
+
+        async function loadStudents() {
+          const res = await fetch("/api/student");
+          const students = await res.json();
+          const tbody = document.getElementById("studentTable");
+          tbody.innerHTML = "";
+          students.forEach(s => {
+            addRow("studentTable", s.id, s.fname, s.lname, s.role, "stu");
+          });
+        }
+
+        // ------------------------------
+        // Add row to table
+        // ------------------------------
+        function addRow(tableId, id, fname, lname, dept, type) {
+          const tbody = document.getElementById(tableId);
+          const row = document.createElement("tr");
+          row.innerHTML = `
+            <td>${id}</td>
+            <td>${fname}</td>
+            <td>${lname}</td>
+            <td>${dept}</td>
+            <td>
+              <button onclick="editRow(this, '${type}')">Edit</button>
+              <button onclick="deleteRow(this, '${type}', ${id})">Delete</button>
+            </td>`;
+          tbody.appendChild(row);
+        }
+
+        // ------------------------------
+        // Edit row
+        // ------------------------------
+        function editRow(btn, type) {
+          const row = btn.closest("tr").children;
+          if (type === "emp") {
+            document.getElementById("empId").value = row[0].textContent;
+            document.getElementById("empFname").value = row[1].textContent;
+            document.getElementById("empLname").value = row[2].textContent;
+            document.getElementById("empDept").value = row[3].textContent;
+          } else {
+            document.getElementById("stuId").value = row[0].textContent;
+            document.getElementById("stuFname").value = row[1].textContent;
+            document.getElementById("stuLname").value = row[2].textContent;
+            document.getElementById("stuDept").value = row[3].textContent;
+          }
+          btn.closest("tr").remove();
+        }
+
+        // ------------------------------
+        // Delete row
+        // ------------------------------
+        async function deleteRow(btn, type, id) {
+          const endpoint = type === "emp" ? `/api/staff/${id}` : `/api/student/${id}`;
+          const res = await fetch(endpoint, { method: "DELETE" });
+          const data = await res.json();
+          if (data.success) {
+            btn.closest("tr").remove();
+            alert("Deleted successfully");
+          } else {
+            alert("Error deleting: " + data.error);
+          }
+        }
+
+        // ------------------------------
+        // Form submissions (API)
+        // ------------------------------
+        document.getElementById("employeeForm").addEventListener("submit", async e => {
+          e.preventDefault();
+          const id = document.getElementById("empId").value;
+          const fname = document.getElementById("empFname").value;
+          const lname = document.getElementById("empLname").value;
+
+          const res = await fetch("/api/staff", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ fname, lname })
+          });
+          const data = await res.json();
+          if (data.success) {
+            alert(`Staff created!\nEmail: ${data.email}\nPassword: ${data.password}`);
+            loadEmployees();
+            e.target.reset();
+          }
+        });
+
+        document.getElementById("studentForm").addEventListener("submit", async e => {
+          e.preventDefault();
+          const id = document.getElementById("stuId").value;
+          const fname = document.getElementById("stuFname").value;
+          const lname = document.getElementById("stuLname").value;
+
+          const res = await fetch("/api/student", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ fname, lname })
+          });
+          const data = await res.json();
+          if (data.success) {
+            alert(`Student created!\nEmail: ${data.email}\nPassword: ${data.password}`);
+            loadStudents();
+            e.target.reset();
+          }
+        });
+
+        // ------------------------------
+        // Initial load
+        // ------------------------------
+        loadEmployees();
+        loadStudents();
+      // -------------------------------------------------
+      // Edit functionality for Messages & Bookings tables
+      // --------------------------------------------------
+      function editReportRow(btn, type) {
+        const cells = btn.closest("tr").children;
+        const values = [...cells].map(td => td.textContent);
+
+        if (type === "msg") {
+          alert("Editing Message:\n" +
+            `ID: ${values[0]}\nUser: ${values[1]}\nMessage: ${values[4]}`);
+          // here you could also populate a hidden form for resubmission
+        } else {
+          alert("Editing Booking:\n" +
+            `ID: ${values[0]}\nName: ${values[1]} ${values[2]}\nService: ${values[4]}`);
+        }
       }
-      btn.closest("tr").remove();
-    }
+
+      // ------------------------------------
+      // Dummy export to Excel functionality
+      // ------------------------------------
+      function downloadExcel() {
+        alert("Excel download will be implemented on server side.");
+      }
+
   </script>
 </body>
 </html>

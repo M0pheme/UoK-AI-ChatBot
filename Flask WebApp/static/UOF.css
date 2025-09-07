@@ -76,6 +76,19 @@ body {
   background: #e6c200;
 }
 
+.portal-btn {
+    display: inline-block;
+    padding: 12px 24px;
+    background: #0077cc;
+    color: white;
+    border-radius: 8px;
+    text-decoration: none;
+    font-weight: bold;
+}
+.portal-btn:hover {
+    background: #005fa3;
+}
+
 /* Sections */
 .section {
   padding: 60px 20px;
